@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  zap-mcp:
+    build: .
+    container_name: ${CONTAINER_NAME:-zap-mcp-server}
+    ports:
+      - "${ZAP_PORT:-8080}:${ZAP_PORT:-8080}"  # ZAP API
+      - "${ZAP_MCP_PORT:-8082}:${ZAP_MCP_PORT:-8082}"  # MCP HTTP
+    environment:
+      # ZAP
+      ZAP_BASE: ${ZAP_BASE:-http://127.0.0.1:8080}
+      ZAP_AUTOSTART: ${ZAP_AUTOSTART:-true}
+      ZAP_SESSION_NAME: ${ZAP_SESSION_NAME:-zap_podman_session}
+      ZAP_SESSION_STRATEGY: ${ZAP_SESSION_STRATEGY:-unique}
+      ZAP_LOG_LEVEL: ${ZAP_LOG_LEVEL:-INFO}
+      ZAP_STARTUP_TIMEOUT: ${ZAP_STARTUP_TIMEOUT:-120}
+      ZAP_LONG_SCAN_TIMEOUT: ${ZAP_LONG_SCAN_TIMEOUT:-14400}
+
+      # MCP
+      ZAP_MCP_HOST: ${ZAP_MCP_HOST:-0.0.0.0}
+      ZAP_MCP_PORT: ${ZAP_MCP_PORT:-8082}
+      ZAP_MCP_PATH: ${ZAP_MCP_PATH:-/mcp}
+
+    # Host accessible from container (Linux + Windows)
+    extra_hosts:
+      - "host.containers.internal:host-gateway"
+
+    volumes:
+      - zap-data:/opt/zap/session
+      - ./logs:/app/logs
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD-SHELL", "c=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:${ZAP_PORT:-8080}/JSON/core/view/version || true); [ \"$c\" = \"200\" ] || [ \"$c\" = \"403\" ]"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  zap-data:
+    driver: local

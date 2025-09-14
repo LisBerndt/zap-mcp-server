@@ -1,0 +1,5 @@
+[33m1c2cd7c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m Initial commit: ZAP MCP Server v1.0.0 - Complete project setup with documentation, CI/CD, and security policies
+[33mb76e224[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/develop[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mdevelop[m[33m)[m minor changes
+[33mc3ed9bb[m Added build and start bats
+[33m5dac784[m Customizable ports
+[33mc0c2ea6[m Tidy up, modified readmes
