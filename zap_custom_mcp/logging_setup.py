@@ -4,7 +4,10 @@ import os
 import sys
 from pathlib import Path
 
-from .config import RESP_PREVIEW
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent))
+
+from config import RESP_PREVIEW
 
 
 class JsonFormatter(logging.Formatter):

@@ -2,7 +2,10 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-from .http_session import get_json
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent))
+
+from http_session import get_json
 
 _DEFAULT_ALERT_COUNTS = {"High": 0, "Medium": 0, "Low": 0, "Informational": 0}
 

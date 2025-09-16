@@ -3,9 +3,12 @@ import time
 from pathlib import Path
 from typing import Optional, Tuple
 
-from ..config import PROGRESS_STEP
-from ..http_session import get_json
-from ..logging_setup import setup_logger
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent.parent))
+
+from config import PROGRESS_STEP
+from http_session import get_json
+from logging_setup import setup_logger
 
 LOG = setup_logger("zap_mcp.scans.active")
 

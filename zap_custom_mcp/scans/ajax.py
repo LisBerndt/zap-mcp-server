@@ -5,8 +5,11 @@ from typing import Any, Dict, Optional, Tuple
 
 from pydantic import BaseModel
 
-from ..http_session import get_json
-from ..logging_setup import setup_logger
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent.parent))
+
+from http_session import get_json
+from logging_setup import setup_logger
 
 LOG = setup_logger("zap_mcp.scans.ajax")
 
