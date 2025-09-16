@@ -58,13 +58,6 @@ jobs:
           path: trivy-results.sarif
           retention-days: 30
 
-      - name: Run Docker Scout
-        uses: docker/scout-action@v1
-        with:
-          command: cves
-          image: zap-custom-mcp:security-scan
-          only-severities: critical,high,medium
-          write-comment: true
 
   notify:
     name: Notify Docker Build Status
