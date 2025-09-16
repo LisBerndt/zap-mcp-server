@@ -1,14 +1,13 @@
-import time
-from typing import Optional, Tuple
-
 import sys
+import time
 from pathlib import Path
+from typing import Optional, Tuple
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from http_session import get_json
 from config import PROGRESS_STEP
+from http_session import get_json
 from logging_setup import setup_logger
 
 LOG = setup_logger("zap_mcp.scans.active")
@@ -90,11 +89,13 @@ def run_ascan(
                 extra={"extra": {"scan_id": scan_id, "id": ascan_id, "status": pct}},
             )
             last_logged = pct
-            
+
             # Call progress callback if provided
             if progress_callback:
                 try:
-                    progress_callback(scan_id, "active", pct, f"Active scan progress: {pct}%")
+                    progress_callback(
+                        scan_id, "active", pct, f"Active scan progress: {pct}%"
+                    )
                 except Exception as e:
                     LOG.warning(f"Progress callback failed: {e}")
 

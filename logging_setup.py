@@ -1,8 +1,6 @@
-import logging
 import json
+import logging
 import os
-
-
 import sys
 from pathlib import Path
 
@@ -40,14 +38,24 @@ class KVFormatter(logging.Formatter):
 def setup_logger(name: str = "zap_mcp") -> logging.Logger:
     level = os.environ.get("ZAP_MCP_LOG_LEVEL", "DEBUG").upper()  # Default to DEBUG
     json_mode = os.environ.get("ZAP_MCP_LOG_JSON", "0").lower() in ("1", "true", "yes")
-    log_file = os.environ.get("ZAP_MCP_LOG_FILE", "zap_mcp_debug.log").strip()  # Default log file in current directory
-    log_http = os.environ.get("ZAP_MCP_LOG_HTTP", "1").lower() in ("1", "true", "yes")  # Default to enabled
+    log_file = os.environ.get(
+        "ZAP_MCP_LOG_FILE", "zap_mcp_debug.log"
+    ).strip()  # Default log file in current directory
+    log_http = os.environ.get("ZAP_MCP_LOG_HTTP", "1").lower() in (
+        "1",
+        "true",
+        "yes",
+    )  # Default to enabled
 
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, level, logging.DEBUG))  # Default to DEBUG
     logger.handlers[:] = []
 
-    formatter = JsonFormatter() if json_mode else KVFormatter("%(asctime)s level=%(levelname)s msg=%(message)s")
+    formatter = (
+        JsonFormatter()
+        if json_mode
+        else KVFormatter("%(asctime)s level=%(levelname)s msg=%(message)s")
+    )
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)

@@ -1,7 +1,6 @@
-from typing import Any, Dict, List
-
 import sys
 from pathlib import Path
+from typing import Any, Dict, List
 
 # Add current directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -21,12 +20,24 @@ def count_alerts_by_risk(alerts: List[dict]) -> Dict[str, int]:
 
 def alerts_summary_fast(scan_id: str, baseurl: str, session_id=None) -> Dict[str, Any]:
     try:
-        data = get_json(scan_id, "/JSON/core/view/alertsSummary/", {"baseurl": baseurl}, session_id=session_id)
+        data = get_json(
+            scan_id,
+            "/JSON/core/view/alertsSummary/",
+            {"baseurl": baseurl},
+            session_id=session_id,
+        )
         counts = _DEFAULT_ALERT_COUNTS.copy()
-        items = data.get("alertsSummary") or data.get("summary") or data.get("alerts-summary") or []
+        items = (
+            data.get("alertsSummary")
+            or data.get("summary")
+            or data.get("alerts-summary")
+            or []
+        )
         if isinstance(items, list):
             for item in items:
-                risk = (item.get("risk") or item.get("riskdesc", "Informational")).split()[0]
+                risk = (
+                    item.get("risk") or item.get("riskdesc", "Informational")
+                ).split()[0]
                 cnt = int(item.get("count", item.get("number", 0)))
                 counts[risk if risk in counts else "Informational"] += cnt
         elif isinstance(items, dict):
@@ -38,7 +49,12 @@ def alerts_summary_fast(scan_id: str, baseurl: str, session_id=None) -> Dict[str
         pass
 
     try:
-        data = get_json(scan_id, "/JSON/core/view/alerts/", {"baseurl": baseurl, "start": 0, "count": 500}, session_id=session_id)
+        data = get_json(
+            scan_id,
+            "/JSON/core/view/alerts/",
+            {"baseurl": baseurl, "start": 0, "count": 500},
+            session_id=session_id,
+        )
         alerts = data.get("alerts", [])
         counts = count_alerts_by_risk(alerts)
         return {"counts": counts, "total": sum(counts.values())}
@@ -46,7 +62,12 @@ def alerts_summary_fast(scan_id: str, baseurl: str, session_id=None) -> Dict[str
         pass
 
     try:
-        num = get_json(scan_id, "/JSON/core/view/numberOfAlerts/", {"baseurl": baseurl}, session_id=session_id).get("numberOfAlerts")
+        num = get_json(
+            scan_id,
+            "/JSON/core/view/numberOfAlerts/",
+            {"baseurl": baseurl},
+            session_id=session_id,
+        ).get("numberOfAlerts")
         total = int(num) if num is not None else 0
     except Exception:
         total = 0
@@ -56,19 +77,33 @@ def alerts_summary_fast(scan_id: str, baseurl: str, session_id=None) -> Dict[str
     return {"counts": counts, "total": total}
 
 
-def alerts_page(scan_id: str, baseurl: str, start: int, count: int, session_id=None) -> List[dict]:
-    data = get_json(scan_id, "/JSON/core/view/alerts/", {"baseurl": baseurl, "start": start, "count": count}, session_id=session_id)
+def alerts_page(
+    scan_id: str, baseurl: str, start: int, count: int, session_id=None
+) -> List[dict]:
+    data = get_json(
+        scan_id,
+        "/JSON/core/view/alerts/",
+        {"baseurl": baseurl, "start": start, "count": count},
+        session_id=session_id,
+    )
     return data.get("alerts", []) or []
 
 
 def format_alert(alert: dict, include_evidence: bool) -> dict:
-    entry = {"risk": alert.get("risk"), "alert": alert.get("alert"), "url": alert.get("url"), "param": alert.get("param")}
+    entry = {
+        "risk": alert.get("risk"),
+        "alert": alert.get("alert"),
+        "url": alert.get("url"),
+        "param": alert.get("param"),
+    }
     if include_evidence:
         entry["evidence"] = alert.get("evidence")
     return entry
 
 
-def alerts_all(scan_id: str, baseurl: str, include_evidence: bool, session_id=None) -> List[dict]:
+def alerts_all(
+    scan_id: str, baseurl: str, include_evidence: bool, session_id=None
+) -> List[dict]:
     alerts = []
     start = 0
     page_size = 500

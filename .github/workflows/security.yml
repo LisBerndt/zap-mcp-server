@@ -51,7 +51,7 @@ jobs:
           extra_args: --debug --only-verified
 
       - name: Upload security reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-reports-${{ github.run_number }}
           path: |
@@ -126,7 +126,7 @@ jobs:
           safety check --json --output vulnerabilities.json
 
       - name: Upload dependency reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dependency-reports-${{ github.run_number }}
           path: |

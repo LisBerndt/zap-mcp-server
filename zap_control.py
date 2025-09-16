@@ -1,23 +1,26 @@
 import os
-import time
 import subprocess
+import sys
+import time
+from pathlib import Path
 from typing import Optional
 from urllib.parse import urlparse
 
 import requests
 
-import sys
-from pathlib import Path
-
 # Add current directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
 from config import (
-    ZAP_BASE, ZAP_AUTOSTART, ZAP_STARTUP_TIMEOUT, 
-    ZAP_STARTUP_POLL, SESSION_NAME, SESSION_STRATEGY
+    SESSION_NAME,
+    SESSION_STRATEGY,
+    ZAP_AUTOSTART,
+    ZAP_BASE,
+    ZAP_STARTUP_POLL,
+    ZAP_STARTUP_TIMEOUT,
 )
-from logging_setup import setup_logger
 from http_session import get_json
+from logging_setup import setup_logger
 
 LOG = setup_logger("zap_mcp.zap_control")
 ZAP_SESSION_ID: Optional[str] = None
@@ -28,10 +31,16 @@ def zap_is_running() -> bool:
         url = f"{ZAP_BASE}/JSON/core/view/version/"
         r = requests.get(url, timeout=5)
         if r.status_code == 200:
-            LOG.debug("zap.api.accessible", extra={"extra": {"url": url, "status": r.status_code}})
+            LOG.debug(
+                "zap.api.accessible",
+                extra={"extra": {"url": url, "status": r.status_code}},
+            )
             return True
         else:
-            LOG.debug("zap.api.inaccessible", extra={"extra": {"url": url, "status": r.status_code}})
+            LOG.debug(
+                "zap.api.inaccessible",
+                extra={"extra": {"url": url, "status": r.status_code}},
+            )
             return False
     except Exception as e:
         LOG.debug("zap.api.error", extra={"extra": {"url": url, "error": repr(e)}})
@@ -41,12 +50,11 @@ def zap_is_running() -> bool:
 def _find_zap_directory() -> Optional[str]:
     """Find the ZAP installation directory by locating zap.bat"""
     try:
-        result = subprocess.run(['where', 'zap.bat'], 
-                              capture_output=True, 
-                              text=True, 
-                              timeout=5)
+        result = subprocess.run(
+            ["where", "zap.bat"], capture_output=True, text=True, timeout=5
+        )
         if result.returncode == 0:
-            zap_bat_path = result.stdout.strip().split('\n')[0]
+            zap_bat_path = result.stdout.strip().split("\n")[0]
             # Get the directory containing zap.bat
             zap_dir = os.path.dirname(zap_bat_path)
             return zap_dir
@@ -59,7 +67,7 @@ def _check_zap_ports() -> list:
     """Check common ZAP ports to see if ZAP is running"""
     common_ports = [8080, 8081, 8082, 8083, 8084, 8085]
     running_ports = []
-    
+
     for port in common_ports:
         try:
             url = f"http://127.0.0.1:{port}/JSON/core/view/version/"
@@ -69,7 +77,7 @@ def _check_zap_ports() -> list:
                 LOG.info("zap.found.on.port", extra={"extra": {"port": port}})
         except Exception:
             continue
-    
+
     return running_ports
 
 
@@ -93,11 +101,13 @@ def ensure_zap_running() -> None:
     if zap_is_running():
         LOG.info("zap.detected.running")
         return
-    
+
     # Check if ZAP is running on other ports
     running_ports = _check_zap_ports()
     if running_ports:
-        LOG.info("zap.detected.on.alternate.port", extra={"extra": {"ports": running_ports}})
+        LOG.info(
+            "zap.detected.on.alternate.port", extra={"extra": {"ports": running_ports}}
+        )
         return
 
     if not ZAP_AUTOSTART:
@@ -110,7 +120,10 @@ def ensure_zap_running() -> None:
 
     zap_dir = _find_zap_directory()
     if not zap_dir:
-        LOG.error("zap.autostart.not_in_path", extra={"extra": {"message": "zap.bat not found in PATH"}})
+        LOG.error(
+            "zap.autostart.not_in_path",
+            extra={"extra": {"message": "zap.bat not found in PATH"}},
+        )
         return
 
     cmd = _build_zap_cmd(zap_dir)
@@ -129,7 +142,9 @@ def ensure_zap_running() -> None:
             return
         time.sleep(max(0.25, ZAP_STARTUP_POLL))
 
-    LOG.error("zap.autostart.timeout", extra={"extra": {"timeout_s": ZAP_STARTUP_TIMEOUT}})
+    LOG.error(
+        "zap.autostart.timeout", extra={"extra": {"timeout_s": ZAP_STARTUP_TIMEOUT}}
+    )
 
 
 def ensure_session() -> Optional[str]:
@@ -149,7 +164,9 @@ def ensure_session() -> Optional[str]:
 
     try:
         if SESSION_STRATEGY in ("reuse", "unique"):
-            r = requests.get(f"{ZAP_BASE}/JSON/core/action/loadSession/", params=_params())
+            r = requests.get(
+                f"{ZAP_BASE}/JSON/core/action/loadSession/", params=_params()
+            )
             if r.status_code == 200:
                 ZAP_SESSION_ID = name
                 return ZAP_SESSION_ID
@@ -170,6 +187,13 @@ def ensure_session() -> Optional[str]:
 
 def access_url(scan_id: str, url: str, follow_redirects: bool = True):
     try:
-        get_json(scan_id, "/JSON/core/action/accessUrl/", {"url": url, "followRedirects": str(follow_redirects).lower()}, session_id=ZAP_SESSION_ID)
+        get_json(
+            scan_id,
+            "/JSON/core/action/accessUrl/",
+            {"url": url, "followRedirects": str(follow_redirects).lower()},
+            session_id=ZAP_SESSION_ID,
+        )
     except Exception as e:
-        LOG.warning("accessUrl.warn", extra={"extra": {"scan_id": scan_id, "err": repr(e)}})
+        LOG.warning(
+            "accessUrl.warn", extra={"extra": {"scan_id": scan_id, "err": repr(e)}}
+        )
