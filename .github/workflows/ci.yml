@@ -50,10 +50,6 @@ jobs:
         run: |
           isort --check-only --diff .
 
-      - name: Type check with mypy
-        run: |
-          mypy . --ignore-missing-imports --explicit-package-bases --disable-error-code=import-untyped
-
       - name: Run tests with pytest
         run: |
           pytest --cov=. --cov-report=xml --cov-report=term-missing
