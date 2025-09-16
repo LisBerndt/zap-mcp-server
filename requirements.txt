@@ -1,5 +1,5 @@
 # MCP Server Dependencies
-mcp>=1.0.0
+# Note: MCP is implemented locally, no external package needed
 
 # HTTP and API Dependencies
 requests>=2.31.0

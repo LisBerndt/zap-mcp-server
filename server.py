@@ -411,7 +411,7 @@ class HeartbeatManager:
 heartbeat_manager = HeartbeatManager()
 
 
-app = Server("zap-mcp")
+app = Server("zap-mcp", "1.0.0")
 
 
 @app.list_tools()
