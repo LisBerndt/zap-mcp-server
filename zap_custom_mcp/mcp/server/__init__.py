@@ -1,9 +1,14 @@
 # MCP Server implementation
 import functools
+import sys
+from pathlib import Path
 from typing import Any, Callable
 
-from ..types import TextContent, Tool
-from .models import InitializationOptions
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
+from mcp.types import TextContent, Tool
+from mcp.server.models import InitializationOptions
 
 
 class Server:

@@ -3,11 +3,14 @@ import time
 from pathlib import Path
 from typing import Dict
 
-from ..alerts import alerts_all, alerts_summary_fast
-from ..config import MCP_SAY
-from ..logging_setup import setup_logger
-from ..utils import canonical_base
-from ..zap_control import ensure_session, ensure_zap_running
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent.parent))
+
+from alerts import alerts_all, alerts_summary_fast
+from config import MCP_SAY
+from logging_setup import setup_logger
+from utils import canonical_base
+from zap_control import ensure_session, ensure_zap_running
 
 LOG = setup_logger("zap_mcp.scan.passive")
 

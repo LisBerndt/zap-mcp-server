@@ -8,7 +8,10 @@ from urllib.parse import urlparse
 
 import requests
 
-from .config import (
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent))
+
+from config import (
     SESSION_NAME,
     SESSION_STRATEGY,
     ZAP_AUTOSTART,
@@ -16,8 +19,8 @@ from .config import (
     ZAP_STARTUP_POLL,
     ZAP_STARTUP_TIMEOUT,
 )
-from .http_session import get_json
-from .logging_setup import setup_logger
+from http_session import get_json
+from logging_setup import setup_logger
 
 LOG = setup_logger("zap_mcp.zap_control")
 ZAP_SESSION_ID: Optional[str] = None

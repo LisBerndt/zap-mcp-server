@@ -7,18 +7,21 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Dict, Mapping, Union
 
-from .logging_setup import setup_logger
-from .mcp.server import Server
-from .mcp.server.models import InitializationOptions
-from .mcp.server.stdio import stdio_server
-from .mcp.types import TextContent, Tool
-from .models import CompleteScanArgs
-from .scans.active import run_ascan
-from .scans.ajax import AjaxOptions, run_ajax
-from .scans.passive import passive_scan_impl
-from .scans.spider import run_spider
-from .utils import _finalize, _prepare
-from .zap_control import ZAP_SESSION_ID
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent))
+
+from logging_setup import setup_logger
+from mcp.server import Server
+from mcp.server.models import InitializationOptions
+from mcp.server.stdio import stdio_server
+from mcp.types import TextContent, Tool
+from models import CompleteScanArgs
+from scans.active import run_ascan
+from scans.ajax import AjaxOptions, run_ajax
+from scans.passive import passive_scan_impl
+from scans.spider import run_spider
+from utils import _finalize, _prepare
+from zap_control import ZAP_SESSION_ID
 
 LOG = setup_logger("zap_mcp.server")
 
@@ -363,6 +366,8 @@ class ScanManager:
         )
 
         # Get results
+        from scans.passive import passive_scan_impl
+        
         result = passive_scan_impl(
             scan_id,
             target,

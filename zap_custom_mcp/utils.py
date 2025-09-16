@@ -5,7 +5,10 @@ from pathlib import Path
 from typing import Dict, List
 from urllib.parse import urlparse, urlunparse
 
-from .config import PROGRESS_STEP
+# Add the parent directory to the path to fix imports
+sys.path.append(str(Path(__file__).parent))
+
+from config import PROGRESS_STEP
 
 _RISK_LEVELS = {"High": 0, "Medium": 1, "Low": 2, "Informational": 3}
 _RISK_WEIGHTS = {"High": 5, "Medium": 3, "Low": 1, "Informational": 0}
