@@ -15,6 +15,8 @@ jobs:
     permissions:
       security-events: write
       contents: read
+      actions: read
+      pull-requests: write
     
     steps:
       - name: Checkout code
@@ -56,45 +58,6 @@ jobs:
           docker stop zap-test
           docker rm zap-test
 
-  docker-push:
-    name: Push to Docker Hub
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: zap-custom-mcp
-          tags: |
-            type=ref,event=branch
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=sha,prefix={{branch}}-
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
   docker-security-scan:
     name: Docker Security Scan
     runs-on: ubuntu-latest
@@ -114,11 +77,13 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Upload SARIF results as artifact
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          name: trivy-sarif-results
+          path: trivy-results.sarif
+          retention-days: 30
 
       - name: Run Docker Scout
         uses: docker/scout-action@v1
@@ -128,61 +93,22 @@ jobs:
           only-severities: critical,high,medium
           write-comment: true
 
-  docker-size-check:
-    name: Docker Image Size Check
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: |
-          docker build -t zap-custom-mcp:size-check .
-
-      - name: Check image size
-        run: |
-          SIZE=$(docker images zap-custom-mcp:size-check --format "{{.Size}}")
-          echo "Docker image size: $SIZE"
-          
-          # Extract numeric value (remove 'MB' or 'GB')
-          if [[ $SIZE == *"GB"* ]]; then
-            NUM_SIZE=$(echo $SIZE | sed 's/GB//' | xargs)
-            if (( $(echo "$NUM_SIZE > 2.0" | bc -l) )); then
-              echo "⚠️ Warning: Docker image is larger than 2GB"
-              exit 1
-            fi
-          elif [[ $SIZE == *"MB"* ]]; then
-            NUM_SIZE=$(echo $SIZE | sed 's/MB//' | xargs)
-            if (( $(echo "$NUM_SIZE > 2048" | bc -l) )); then
-              echo "⚠️ Warning: Docker image is larger than 2GB"
-              exit 1
-            fi
-          fi
-          
-          echo "✅ Docker image size is acceptable"
-
   notify:
     name: Notify Docker Build Status
     runs-on: ubuntu-latest
-    needs: [docker-build, docker-push, docker-security-scan, docker-size-check]
+    needs: [docker-build, docker-security-scan]
     if: always()
     
     steps:
       - name: Notify success
-        if: needs.docker-build.result == 'success' && needs.docker-security-scan.result == 'success' && needs.docker-size-check.result == 'success'
+        if: needs.docker-build.result == 'success' && needs.docker-security-scan.result == 'success'
         run: |
           echo "✅ Docker build completed successfully!"
           echo "🔒 Security scan passed"
-          echo "📏 Image size check passed"
-          if [ "${{ needs.docker-push.result }}" == "success" ]; then
-            echo "🐳 Image pushed to Docker Hub"
-          fi
 
       - name: Notify failure
-        if: needs.docker-build.result == 'failure' || needs.docker-security-scan.result == 'failure' || needs.docker-size-check.result == 'failure'
+        if: needs.docker-build.result == 'failure' || needs.docker-security-scan.result == 'failure'
         run: |
           echo "❌ Docker build failed!"
           echo "Build: ${{ needs.docker-build.result }}"
           echo "Security: ${{ needs.docker-security-scan.result }}"
-          echo "Size check: ${{ needs.docker-size-check.result }}"

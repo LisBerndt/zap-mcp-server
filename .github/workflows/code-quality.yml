@@ -132,7 +132,7 @@ jobs:
       - name: Check import performance
         run: |
           echo "Testing import performance..."
-          time python -c "import http_server; import scans; import models; import utils"
+          time python -c "import zap_custom_mcp; import zap_custom_mcp.http_server; import zap_custom_mcp.scans; import zap_custom_mcp.models; import zap_custom_mcp.utils"
           echo "✅ Imports completed successfully"
 
       - name: Check memory usage

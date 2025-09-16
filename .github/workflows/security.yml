@@ -15,6 +15,8 @@ jobs:
     permissions:
       security-events: write
       contents: read
+      actions: read
+      pull-requests: write
     
     steps:
       - name: Checkout code
@@ -155,11 +157,13 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Upload SARIF results as artifact
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          name: trivy-sarif-results
+          path: trivy-results.sarif
+          retention-days: 30
 
       - name: Run Docker Scout
         uses: docker/scout-action@v1
