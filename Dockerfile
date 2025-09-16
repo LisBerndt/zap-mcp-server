@@ -56,4 +56,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 WORKDIR /app
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["python3", "http_server.py"]
+CMD ["python", "-m", "zap_custom_mcp"]

@@ -9,13 +9,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# Add current directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-
-from config import LONG_SCAN_TIMEOUT, MCP_HOST, MCP_PATH, MCP_PORT
-from logging_setup import setup_logger
-from server import call_tool, list_tools
-from zap_control import ensure_zap_running
+# Handle both module and direct execution
+try:
+    from .config import LONG_SCAN_TIMEOUT, MCP_HOST, MCP_PATH, MCP_PORT
+    from .logging_setup import setup_logger
+    from .server import call_tool, list_tools
+    from .zap_control import ensure_zap_running
+except ImportError:
+    # Fallback for direct execution
+    from config import LONG_SCAN_TIMEOUT, MCP_HOST, MCP_PATH, MCP_PORT
+    from logging_setup import setup_logger
+    from server import call_tool, list_tools
+    from zap_control import ensure_zap_running
 
 LOG = setup_logger("zap_mcp.http_server")
 
@@ -410,7 +415,8 @@ async def root():
     }
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main entry point for the HTTP server."""
     import uvicorn
 
     # CRITICAL: Set longer timeout to prevent 5-minute timeout issues
@@ -428,3 +434,7 @@ if __name__ == "__main__":
         reload=False,  # Disable reload for production
         workers=1,  # Single worker for debugging
     )
+
+
+if __name__ == "__main__":
+    main()

@@ -3,18 +3,15 @@ import uuid
 from pathlib import Path
 from typing import Dict
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from alerts import alerts_all, alerts_summary_fast
-from config import MCP_SAY
-from http_session import get_json
-from logging_setup import setup_logger
-from scans.active import run_ascan
-from scans.ajax import AjaxOptions, run_ajax
-from scans.spider import run_spider
-from utils import canonical_base, vuln_names_from_findings
-from zap_control import access_url, ensure_session, ensure_zap_running
+from ..alerts import alerts_all, alerts_summary_fast
+from ..config import MCP_SAY
+from ..http_session import get_json
+from ..logging_setup import setup_logger
+from .active import run_ascan
+from .ajax import AjaxOptions, run_ajax
+from .spider import run_spider
+from ..utils import canonical_base, vuln_names_from_findings
+from ..zap_control import access_url, ensure_session, ensure_zap_running
 
 
 def complete_flow(scan_id: str, target: str, args, session_id: str) -> Dict:

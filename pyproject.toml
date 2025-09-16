@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "zap_mcp_server"
+name = "zap-custom-mcp"
 version = "1.0.0"
 description = "A powerful Model Context Protocol (MCP) Server that integrates OWASP ZAP with AI assistants"
 readme = "README.md"
@@ -55,18 +55,18 @@ docker = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/LisBerndt/zap-mcp-server"
-Documentation = "https://github.com/LisBerndt/zap-mcp-server/wiki"
-Repository = "https://github.com/LisBerndt/zap-mcp-server.git"
-Issues = "https://github.com/LisBerndt/zap-mcp-server/issues"
-Changelog = "https://github.com/LisBerndt/zap-mcp-server/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/LisBerndt/zap-custom-mcp"
+Documentation = "https://github.com/LisBerndt/zap-custom-mcp/wiki"
+Repository = "https://github.com/LisBerndt/zap-custom-mcp.git"
+Issues = "https://github.com/LisBerndt/zap-custom-mcp/issues"
+Changelog = "https://github.com/LisBerndt/zap-custom-mcp/blob/main/CHANGELOG.md"
 
 [project.scripts]
-zap_mcp_server = "http_server:main"
+zap-custom-mcp = "zap_custom_mcp.http_server:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["*"]
+include = ["zap_custom_mcp*"]
 exclude = ["tests*", "docs*", "*.tests*", "*.tests.*", "tests.*"]
 
 [tool.setuptools.package-data]
@@ -94,7 +94,7 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["zap_mcp_server"]
+known_first_party = ["zap_custom_mcp"]
 
 [tool.mypy]
 python_version = "3.11"

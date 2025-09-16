@@ -2,10 +2,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-# Add current directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-
-from http_session import get_json
+from .http_session import get_json
 
 _DEFAULT_ALERT_COUNTS = {"High": 0, "Medium": 0, "Low": 0, "Informational": 0}
 

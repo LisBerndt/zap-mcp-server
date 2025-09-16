@@ -39,13 +39,27 @@ A powerful **Model Context Protocol (MCP) Server** that integrates **OWASP ZAP**
 
 ## 🛠️ Installation
 
+### Package Structure
+
+This project uses a proper Python package structure (`zap_custom_mcp/`) which provides several benefits:
+
+- **✅ Clean imports** - Proper module organization
+- **✅ Docker compatibility** - Works seamlessly in containers  
+- **✅ Mypy support** - Better type checking and IDE support
+- **✅ PyPI ready** - Can be published as a proper Python package
+
+**Execution methods:**
+- `python -m zap_custom_mcp` (recommended)
+- `python -m zap_custom_mcp.http_server` (alternative)
+- `python zap_custom_mcp/http_server.py` (legacy, may have issues)
+
 ### Option 1: Local Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/LisBerndt/zap-mcp-server.git
-   cd zap-mcp-server
+   git clone https://github.com/LisBerndt/zap-custom-mcp.git
+   cd zap-custom-mcp
    ```
 
 2. **Install OWASP ZAP**
@@ -65,8 +79,8 @@ A powerful **Model Context Protocol (MCP) Server** that integrates **OWASP ZAP**
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/zap-mcp-server.git
-cd zap-mcp-server
+git clone https://github.com/LisBerndt/zap-custom-mcp.git
+cd zap-custom-mcp
 
 # 2. Build and start containers (auto-detects Docker/Podman)
 # Linux/Mac:
@@ -137,8 +151,8 @@ export ZAP_BASE="http://127.0.0.1:8081"
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/zap-mcp-server.git
-cd zap-mcp-server
+git clone https://github.com/LisBerndt/zap-custom-mcp.git
+cd zap-custom-mcp
 
 # 2. Start (auto-detects Docker/Podman)
 # Linux/Mac:
@@ -162,9 +176,21 @@ start.bat
 
 ### 1. Start the Server
 
+**Recommended method (as package):**
 ```bash
-python http_server.py
+python -m zap_custom_mcp
 ```
+
+**Alternative methods:**
+```bash
+# As specific module
+python -m zap_custom_mcp.http_server
+
+# Direct execution (legacy, may have import issues)
+python zap_custom_mcp/http_server.py
+```
+
+**💡 Best Practice:** Always use `python -m zap_custom_mcp` for the most reliable execution.
 
 The server will automatically:
 
@@ -398,7 +424,7 @@ java -version
 
 # Enable debug logging
 set ZAP_LOG_LEVEL=DEBUG
-python http_server.py
+python -m zap_custom_mcp
 ```
 
 ### Connection Issues
@@ -432,9 +458,31 @@ If your MCP client cannot connect:
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -am 'Add feature'`
-4. Push to branch: `git push origin feature-name`
-5. Submit a Pull Request
+3. Install development dependencies: `pip install -e ".[dev]"`
+4. Run type checking: `mypy . --ignore-missing-imports`
+5. Commit changes: `git commit -am 'Add feature'`
+6. Push to branch: `git push origin feature-name`
+7. Submit a Pull Request
+
+### Development Setup
+
+```bash
+# Clone and setup
+git clone https://github.com/LisBerndt/zap-custom-mcp.git
+cd zap-custom-mcp
+
+# Install in development mode
+pip install -e ".[dev]"
+
+# Run type checking
+mypy . --ignore-missing-imports
+
+# Run tests
+pytest
+
+# Start development server
+python -m zap_custom_mcp
+```
 
 ## 📄 License
 
@@ -454,9 +502,9 @@ _"Build applications and services for a self-sovereign future."_ — [Sovereign 
 
 ## 📞 Support
 
-- 📖 [Documentation](https://github.com/LisBerndt/zap-mcp-server/wiki)
-- 🐛 [Issue Tracker](https://github.com/LisBerndt/zap-mcp-server/issues)
-- 💬 [Discussions](https://github.com/LisBerndt/zap-mcp-server/discussions)
+- 📖 [Documentation](https://github.com/LisBerndt/zap-custom-mcp/wiki)
+- 🐛 [Issue Tracker](https://github.com/LisBerndt/zap-custom-mcp/issues)
+- 💬 [Discussions](https://github.com/LisBerndt/zap-custom-mcp/discussions)
 
 ---
 

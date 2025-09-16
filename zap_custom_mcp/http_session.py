@@ -10,10 +10,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.connectionpool import HTTPConnectionPool, HTTPSConnectionPool
 from urllib3.util.retry import Retry
 
-# Add current directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-
-from config import (
+from .config import (
     APIKEY,
     BACKOFF,
     HTTP_CONNECT_TIMEOUT,
@@ -26,7 +23,7 @@ from config import (
     RETRY_TOTAL,
     ZAP_BASE,
 )
-from logging_setup import setup_logger
+from .logging_setup import setup_logger
 
 LOG = setup_logger("zap_mcp.http_session")
 _REQ_SESSION = None

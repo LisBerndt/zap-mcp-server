@@ -3,13 +3,10 @@ import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
 from pydantic import BaseModel
 
-from http_session import get_json
-from logging_setup import setup_logger
+from ..http_session import get_json
+from ..logging_setup import setup_logger
 
 LOG = setup_logger("zap_mcp.scans.ajax")
 
