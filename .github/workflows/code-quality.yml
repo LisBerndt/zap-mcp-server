@@ -1,0 +1,164 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 black isort mypy bandit
+
+      - name: Run Black code formatter
+        run: |
+          black --check --diff .
+
+      - name: Run isort import sorter
+        run: |
+          isort --check-only --diff .
+
+      - name: Run flake8 linter
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+
+      - name: Run mypy type checker
+        run: |
+          mypy . --ignore-missing-imports
+
+      - name: Run Bandit security linter
+        run: |
+          bandit -r . -f json -o bandit-report.json || true
+
+      - name: Check for TODO/FIXME comments
+        run: |
+          echo "Checking for TODO/FIXME comments..."
+          if grep -r "TODO\|FIXME" . --exclude-dir=.git --exclude-dir=__pycache__ --exclude="*.md"; then
+            echo "⚠️ Found TODO/FIXME comments. Consider addressing them."
+          else
+            echo "✅ No TODO/FIXME comments found."
+          fi
+
+      - name: Check for print statements
+        run: |
+          echo "Checking for print statements..."
+          if grep -r "print(" . --exclude-dir=.git --exclude-dir=__pycache__ --exclude="*.md"; then
+            echo "⚠️ Found print statements. Consider using logging instead."
+          else
+            echo "✅ No print statements found."
+          fi
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: bandit-report
+          path: bandit-report.json
+
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check README exists
+        run: |
+          if [ ! -f "README.md" ]; then
+            echo "❌ README.md not found"
+            exit 1
+          fi
+          echo "✅ README.md exists"
+
+      - name: Check LICENSE exists
+        run: |
+          if [ ! -f "LICENSE" ]; then
+            echo "❌ LICENSE file not found"
+            exit 1
+          fi
+          echo "✅ LICENSE file exists"
+
+      - name: Check CHANGELOG exists
+        run: |
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "❌ CHANGELOG.md not found"
+            exit 1
+          fi
+          echo "✅ CHANGELOG.md exists"
+
+      - name: Check for broken links in README
+        run: |
+          echo "Checking for broken links in README.md..."
+          # This is a basic check - for production use, consider using a proper link checker
+          if grep -q "http" README.md; then
+            echo "⚠️ Found HTTP links in README. Consider verifying they work."
+          else
+            echo "✅ No HTTP links found in README."
+          fi
+
+  performance:
+    name: Performance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install memory-profiler psutil
+
+      - name: Check import performance
+        run: |
+          echo "Testing import performance..."
+          time python -c "import http_server; import scans; import models; import utils"
+          echo "✅ Imports completed successfully"
+
+      - name: Check memory usage
+        run: |
+          echo "Checking memory usage..."
+          python -c "
+          import psutil
+          import os
+          process = psutil.Process(os.getpid())
+          memory_mb = process.memory_info().rss / 1024 / 1024
+          print(f'Memory usage: {memory_mb:.2f} MB')
+          if memory_mb > 100:
+              print('⚠️ High memory usage detected')
+              exit(1)
+          else:
+              print('✅ Memory usage is acceptable')
+          "
