@@ -2,8 +2,8 @@
 Basic tests for the ZAP MCP Server.
 """
 
-import sys
 import os
+import sys
 
 
 def test_package_exists():

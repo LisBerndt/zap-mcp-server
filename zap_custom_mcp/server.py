@@ -71,7 +71,6 @@ class ScanManager:
             import time
 
             import requests
-
             from config import APIKEY, SESSION_NAME, ZAP_BASE
 
             session_name = f"{SESSION_NAME}_{int(time.time())}"
@@ -990,7 +989,6 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> list[TextContent]:
         import urllib.parse
 
         import requests
-
         from config import APIKEY, SESSION_NAME, ZAP_BASE
         from zap_control import ZAP_SESSION_ID
 

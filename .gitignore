@@ -197,3 +197,4 @@ yarn-error.log*
 build/
 dist/
 *.egg-info/
+bandit-report.json

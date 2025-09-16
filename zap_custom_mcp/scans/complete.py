@@ -7,11 +7,11 @@ from ..alerts import alerts_all, alerts_summary_fast
 from ..config import MCP_SAY
 from ..http_session import get_json
 from ..logging_setup import setup_logger
+from ..utils import canonical_base, vuln_names_from_findings
+from ..zap_control import access_url, ensure_session, ensure_zap_running
 from .active import run_ascan
 from .ajax import AjaxOptions, run_ajax
 from .spider import run_spider
-from ..utils import canonical_base, vuln_names_from_findings
-from ..zap_control import access_url, ensure_session, ensure_zap_running
 
 
 def complete_flow(scan_id: str, target: str, args, session_id: str) -> Dict:
