@@ -22,6 +22,18 @@ services:
       ZAP_MCP_PORT: ${ZAP_MCP_PORT:-8082}
       ZAP_MCP_PATH: ${ZAP_MCP_PATH:-/mcp}
 
+      # Firefox for AJAX scans (headless mode)
+      MOZ_HEADLESS: 1
+      MOZ_DISABLE_CONTENT_SANDBOX: 1
+      MOZ_DISABLE_GMP_SANDBOX: 1
+      MOZ_DISABLE_RDD_SANDBOX: 1
+      MOZ_DISABLE_GPU_SANDBOX: 1
+      MOZ_DISABLE_SOCKET_PROCESS_SANDBOX: 1
+      MOZ_DISABLE_UTILITY_SANDBOX: 1
+
+      # JVM options for headless mode
+      JAVA_OPTS: "-Djava.awt.headless=true -Dsun.java2d.xrender=false -Dsun.java2d.noddraw=true -Dsun.java2d.opengl=false -Dsun.java2d.pmoffscreen=false -Dsun.java2d.d3d=false -Dsun.java2d.ddoffscreen=false"
+
     # Host accessible from container (Linux + Windows)
     extra_hosts:
       - "host.docker.internal:host-gateway"

@@ -33,6 +33,7 @@ A powerful **Model Context Protocol (MCP) Server** that integrates **OWASP ZAP**
 - **OWASP ZAP** installed and accessible via PATH
 - **Java** (required by ZAP)
 - **Docker** or **Podman** (optional, for containerized deployment)
+- **Firefox ESR** (included in Docker/Podman containers for AJAX scans)
 
 **📖 For container-specific prerequisites, see:**
 - **[DOCKER.md](DOCKER.md)** - Docker prerequisites and setup
@@ -323,6 +324,25 @@ For other MCP clients, use the same URL endpoint.
   }
 }
 ```
+
+### AJAX Spider Scan
+
+**💡 Perfect for:** Modern web applications with JavaScript/AJAX content.
+
+```json
+{
+  "tool": "start_ajax_scan",
+  "arguments": {
+    "url": "https://juice-shop.herokuapp.com/#/",
+    "maxDuration": 5,
+    "maxCrawlDepth": 5,
+    "numberOfBrowsers": 1,
+    "browserId": "firefox-headless"
+  }
+}
+```
+
+**Note:** AJAX scans require Firefox to be installed in the container (included by default). Firefox runs in headless mode without requiring any display server.
 
 ### Custom Active Scan
 

@@ -22,6 +22,7 @@ URL: https://localhost:8443    → https://host.containers.internal:8443
 - Podman and Podman Compose installed
 - At least 4GB RAM for the container
 - Ports 8080 and 8082 available
+- Firefox ESR installed in container (for AJAX scans)
 
 ### Installing Podman Compose
 
@@ -201,6 +202,18 @@ After startup, the following services are available:
 
 - **ZAP API**: http://localhost:8080
 - **MCP Server**: http://localhost:8082/mcp
+
+## AJAX Scans
+
+The container includes Firefox ESR for AJAX spider scans:
+
+- **Browser**: Firefox ESR (headless mode)
+- **No X11 Required**: Runs completely headless without display server
+- **Environment**: `MOZ_HEADLESS=1` with all sandbox features disabled
+- **JVM Options**: Headless mode with OpenGL disabled
+- **Default Configuration**: Uses `firefox-headless` browser ID
+
+AJAX scans will automatically use the Firefox browser in headless mode without requiring any display server.
 
 ## Example Scans
 

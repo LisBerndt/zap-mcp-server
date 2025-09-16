@@ -6,9 +6,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# System packages (Python + curl for healthcheck)
+ # System packages (Python + curl for healthcheck + Firefox for AJAX scans)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip python3-venv curl ca-certificates \
+    firefox-esr \
  && rm -rf /var/lib/apt/lists/*
 
 # Virtual environment
@@ -46,7 +47,15 @@ ENV ZAP_BASE=${ZAP_BASE:-http://127.0.0.1:8080} \
     ZAP_SESSION_NAME=${ZAP_SESSION_NAME:-zap_docker_session} \
     ZAP_SESSION_STRATEGY=${ZAP_SESSION_STRATEGY:-unique} \
     ZAP_LOG_LEVEL=${ZAP_LOG_LEVEL:-INFO} \
-    ZAP_STARTUP_TIMEOUT=${ZAP_STARTUP_TIMEOUT:-120}
+    ZAP_STARTUP_TIMEOUT=${ZAP_STARTUP_TIMEOUT:-120} \
+    JAVA_OPTS="-Djava.awt.headless=true -Dsun.java2d.xrender=false -Dsun.java2d.noddraw=true -Dsun.java2d.opengl=false -Dsun.java2d.pmoffscreen=false -Dsun.java2d.d3d=false -Dsun.java2d.ddoffscreen=false" \
+    MOZ_HEADLESS=1 \
+    MOZ_DISABLE_CONTENT_SANDBOX=1 \
+    MOZ_DISABLE_GMP_SANDBOX=1 \
+    MOZ_DISABLE_RDD_SANDBOX=1 \
+    MOZ_DISABLE_GPU_SANDBOX=1 \
+    MOZ_DISABLE_SOCKET_PROCESS_SANDBOX=1 \
+    MOZ_DISABLE_UTILITY_SANDBOX=1
 
 EXPOSE ${ZAP_PORT:-8080} ${ZAP_MCP_PORT:-8082}
 
