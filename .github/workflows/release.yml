@@ -2,8 +2,24 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type (patch, minor, major)'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      custom_changelog:
+        description: 'Custom changelog (optional)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   release:
@@ -35,39 +51,107 @@ jobs:
         run: |
           twine check dist/*
 
-      - name: Extract version from tag
-        id: get_version
+      - name: Get current version and generate new tag
+        id: version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          VERSION=${VERSION#v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          # Get the latest tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Current latest tag: $LATEST_TAG"
+          
+          # Extract version number (remove 'v' prefix)
+          VERSION=${LATEST_TAG#v}
+          echo "Current version: $VERSION"
+          
+          # Split version into parts
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          
+          # Determine version bump type
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BUMP_TYPE="${{ github.event.inputs.version_bump }}"
+          else
+            # Auto-detect bump type based on commit messages
+            COMMITS=$(git log --pretty=format:"%s" --no-merges HEAD~10..HEAD)
+            if echo "$COMMITS" | grep -qiE "(breaking|major|!:)"; then
+              BUMP_TYPE="major"
+            elif echo "$COMMITS" | grep -qiE "(feat|feature|minor)"; then
+              BUMP_TYPE="minor"
+            else
+              BUMP_TYPE="patch"
+            fi
+          fi
+          
+          echo "Bump type: $BUMP_TYPE"
+          
+          # Calculate new version
+          case $BUMP_TYPE in
+            major)
+              NEW_MAJOR=$((MAJOR + 1))
+              NEW_MINOR=0
+              NEW_PATCH=0
+              ;;
+            minor)
+              NEW_MAJOR=$MAJOR
+              NEW_MINOR=$((MINOR + 1))
+              NEW_PATCH=0
+              ;;
+            patch)
+              NEW_MAJOR=$MAJOR
+              NEW_MINOR=$MINOR
+              NEW_PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
+          NEW_TAG="v$NEW_VERSION"
+          
+          echo "New version: $NEW_VERSION"
+          echo "New tag: $NEW_TAG"
+          
+          # Output for next steps
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "release_name=Release $NEW_TAG" >> $GITHUB_OUTPUT
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
 
       - name: Generate changelog
         id: changelog
         run: |
-          # Get commits since last tag
-          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            COMMITS=$(git log --pretty=format:"- %s" --no-merges)
+          # Handle custom changelog for manual releases
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.custom_changelog }}" ]; then
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "${{ github.event.inputs.custom_changelog }}" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
-            COMMITS=$(git log --pretty=format:"- %s" --no-merges ${LAST_TAG}..HEAD)
+            # Generate automatic changelog
+            LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "v0.0.0")
+            
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "## What's Changed" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            
+            # Get commits since last tag
+            if [ "$LAST_TAG" != "v0.0.0" ]; then
+              COMMITS=$(git log --pretty=format:"- %s" --no-merges ${LAST_TAG}..HEAD)
+              echo "$COMMITS" >> $GITHUB_OUTPUT
+            else
+              # First release - get all commits
+              COMMITS=$(git log --pretty=format:"- %s" --no-merges)
+              echo "$COMMITS" >> $GITHUB_OUTPUT
+            fi
+            
+            echo "" >> $GITHUB_OUTPUT
+            echo "**Version Bump**: ${{ steps.version.outputs.bump_type }}" >> $GITHUB_OUTPUT
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LAST_TAG}...${{ steps.version.outputs.tag }}" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
-          
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "## What's Changed" >> $GITHUB_OUTPUT
-          echo "$COMMITS" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LAST_TAG}...${{ steps.get_version.tag }}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.get_version.tag }}
-          release_name: Release ${{ steps.get_version.tag }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          release_name: ${{ steps.version.outputs.release_name }}
           body: ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
@@ -79,13 +163,14 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/
-          asset_name: zap-custom-mcp-${{ steps.get_version.version }}-dist.tar.gz
+          asset_name: zap-custom-mcp-${{ steps.version.outputs.version }}-dist.tar.gz
           asset_content_type: application/gzip
 
   docker-release:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: release
+    if: false  # Disabled - no Docker release
     
     steps:
       - name: Checkout code
@@ -123,20 +208,18 @@ jobs:
   notify:
     name: Notify Release
     runs-on: ubuntu-latest
-    needs: [release, docker-release]
+    needs: [release]  # Only depends on release job
     if: always()
     
     steps:
       - name: Notify success
-        if: needs.release.result == 'success' && needs.docker-release.result == 'success'
+        if: needs.release.result == 'success'
         run: |
           echo "✅ Release ${{ github.ref_name }} created successfully!"
-          echo "🐳 Docker image pushed to Docker Hub"
           echo "📦 Python package built and uploaded"
 
       - name: Notify failure
-        if: needs.release.result == 'failure' || needs.docker-release.result == 'failure'
+        if: needs.release.result == 'failure'
         run: |
           echo "❌ Release failed!"
           echo "Release job: ${{ needs.release.result }}"
-          echo "Docker job: ${{ needs.docker-release.result }}"
