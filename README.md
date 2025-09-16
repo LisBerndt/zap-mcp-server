@@ -45,7 +45,6 @@ This project uses a proper Python package structure (`zap_custom_mcp/`) which pr
 
 - **✅ Clean imports** - Proper module organization
 - **✅ Docker compatibility** - Works seamlessly in containers  
-- **✅ Mypy support** - Better type checking and IDE support
 - **✅ PyPI ready** - Can be published as a proper Python package
 
 **Execution methods:**
@@ -458,7 +457,7 @@ If your MCP client cannot connect:
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
 3. Install development dependencies: `pip install -e ".[dev]"`
-4. Run type checking: `mypy . --ignore-missing-imports`
+4. Run tests: `pytest`
 5. Commit changes: `git commit -am 'Add feature'`
 6. Push to branch: `git push origin feature-name`
 7. Submit a Pull Request
@@ -472,9 +471,6 @@ cd zap-custom-mcp
 
 # Install in development mode
 pip install -e ".[dev]"
-
-# Run type checking
-mypy . --ignore-missing-imports
 
 # Run tests
 pytest
