@@ -1,6 +1,7 @@
 """
 Basic tests for the ZAP MCP Server.
 """
+
 import pytest
 import sys
 import os
@@ -13,10 +14,11 @@ def test_import_config():
     """Test that config module can be imported."""
     try:
         import config
-        assert hasattr(config, 'ZAP_BASE')
-        assert hasattr(config, 'APIKEY')
-        assert hasattr(config, 'MCP_HOST')
-        assert hasattr(config, 'MCP_PORT')
+
+        assert hasattr(config, "ZAP_BASE")
+        assert hasattr(config, "APIKEY")
+        assert hasattr(config, "MCP_HOST")
+        assert hasattr(config, "MCP_PORT")
     except ImportError as e:
         pytest.fail(f"Failed to import config: {e}")
 
@@ -25,7 +27,8 @@ def test_import_utils():
     """Test that utils module can be imported."""
     try:
         import utils
-        assert hasattr(utils, 'get_logger')
+
+        assert hasattr(utils, "get_logger")
     except ImportError as e:
         pytest.fail(f"Failed to import utils: {e}")
 
@@ -34,7 +37,8 @@ def test_import_models():
     """Test that models module can be imported."""
     try:
         import models
-        assert hasattr(models, 'ScanResult')
+
+        assert hasattr(models, "ScanResult")
     except ImportError as e:
         pytest.fail(f"Failed to import models: {e}")
 
