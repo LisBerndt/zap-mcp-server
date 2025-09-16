@@ -2,19 +2,20 @@
 
 This document describes how to run the ZAP MCP Server in a Docker container and how to scan localhost applications.
 
-## ⚠️ IMPORTANT: Localhost Access from Docker Containers
+## ⚠️ IMPORTANT: Automatic Localhost URL Transformation
 
-**When using Docker/Podman, sites running on localhost must be accessed via `host.docker.internal`:**
+**✅ AUTOMATIC TRANSFORMATION:** The server now automatically detects Docker environments and transforms `localhost`/`127.0.0.1` URLs to `host.docker.internal`:
 
 ```bash
-# ❌ Does NOT work in Docker/Podman:
-URL: http://localhost:3000
+# ✅ These URLs are automatically transformed in Docker:
+URL: http://localhost:3000     → http://host.docker.internal:3000
+URL: http://127.0.0.1:8080    → http://host.docker.internal:8080
+URL: https://localhost:8443    → https://host.docker.internal:8443
 
-# ✅ Works in Docker/Podman:
-URL: http://host.docker.internal:3000
+# ✅ You can now use localhost URLs directly!
 ```
 
-This is a critical requirement for scanning localhost applications from within containers!
+**This means you no longer need to manually replace `localhost` with `host.docker.internal` - it happens automatically!**
 
 ## Prerequisites
 
@@ -37,9 +38,10 @@ This is a critical requirement for scanning localhost applications from within c
 docker-compose ps
 ```
 
-**⚠️ CRITICAL: For localhost scans use:**
-- `http://host.docker.internal:3000` instead of `http://localhost:3000`
-- **Never use `localhost` URLs when scanning from Docker containers!**
+**⚠️ CRITICAL: For localhost scans, you can now use:**
+- `http://localhost:3000` (automatically transformed to `http://host.docker.internal:3000`)
+- `http://127.0.0.1:8080` (automatically transformed to `http://host.docker.internal:8080`)
+- **No manual URL replacement needed!**
 
 ## Localhost Scanning
 
@@ -53,17 +55,20 @@ Docker containers are isolated by default. **`localhost` in the container points
 
 **You MUST use `host.docker.internal` instead of `localhost` for all localhost applications!**
 
-### Solution: Host Gateway (Recommended)
+### ✅ AUTOMATIC SOLUTION
 
-```yaml
-extra_hosts:
-  - "host.docker.internal:host-gateway"
+**The server automatically handles localhost URL transformation:**
+
+```bash
+# ✅ These work automatically in Docker:
+http://localhost:3000     → http://host.docker.internal:3000
+http://127.0.0.1:8080    → http://host.docker.internal:8080
+https://localhost:8443    → https://host.docker.internal:8443
+
+# ✅ You can use localhost URLs directly!
 ```
 
-**⚠️ CRITICAL: Usage:**
-- ❌ **NEVER use:** `http://localhost:3000`
-- ✅ **ALWAYS use:** `http://host.docker.internal:3000`
-- **Replace ALL `localhost` with `host.docker.internal` in your scan URLs!**
+**No manual URL replacement needed - the server detects Docker and transforms URLs automatically!**
 
 ## Configuration
 

@@ -31,12 +31,20 @@ echo ZAP MCP Server is starting...
 echo ZAP API will be available at: http://localhost:8080
 echo MCP Server will be available at: http://localhost:8082/mcp
 echo.
-echo For localhost scans, use: http://host.docker.internal:PORT
+echo ✅ AUTOMATIC URL TRANSFORMATION ENABLED:
+echo    - localhost URLs are automatically mapped to host.docker.internal (Docker)
+echo    - localhost URLs are automatically mapped to host.containers.internal (Podman)
+echo    - You can use localhost URLs directly - no manual mapping needed!
+echo.
+echo Examples:
+echo    http://localhost:3000  →  http://host.docker.internal:3000 (Docker)
+echo    http://localhost:3000  →  http://host.containers.internal:3000 (Podman)
 echo.
 echo To view logs: %COMPOSE_CMD% logs -f
 echo To stop: %COMPOSE_CMD% down
 
 pause
+
 
 
 
