@@ -29,15 +29,25 @@ def sanitize_target(url: str) -> str:
 
 
 def transform_url_for_docker(url: str) -> str:
-    """Transform URLs for Docker environment"""
-    if not os.path.exists("/.dockerenv"):
+    """Transform URLs for Docker/Podman environment"""
+    # Check if running in Docker container
+    is_docker = os.path.exists("/.dockerenv") or os.environ.get("DOCKER_CONTAINER") == "true"
+    
+    # Check if running in Podman container
+    is_podman = os.path.exists("/run/.containerenv") or os.environ.get("CONTAINER") == "podman"
+    
+    if not (is_docker or is_podman):
         return url
 
     parsed = urlparse(url)
 
-    # localhost/127.0.0.1 → host.docker.internal
+    # localhost/127.0.0.1 → host.docker.internal (Docker) or host.containers.internal (Podman)
     if parsed.hostname in ("localhost", "127.0.0.1"):
-        new_hostname = "host.docker.internal"
+        if is_podman:
+            new_hostname = "host.containers.internal"
+        else:
+            new_hostname = "host.docker.internal"
+            
         new_parsed = parsed._replace(
             netloc=f"{new_hostname}:{parsed.port}" if parsed.port else new_hostname
         )
@@ -75,7 +85,9 @@ def risk_score(counts: Dict[str, int]) -> int:
 
 def _prepare(scan_id: str, url: str) -> str:
     """Prepare target URL for scanning."""
-    target = sanitize_target(url)
+    # First transform URL for Docker/Podman environment
+    transformed_url = transform_url_for_docker(url)
+    target = sanitize_target(transformed_url)
     from zap_control import access_url
 
     access_url(scan_id, target)

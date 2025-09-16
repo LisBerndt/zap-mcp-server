@@ -1,10 +1,20 @@
 import os
 
 
-# Docker Detection and Configuration
+# Docker/Podman Detection and Configuration
 def is_docker_environment():
     """Check if running in Docker container"""
     return os.path.exists("/.dockerenv") or os.environ.get("DOCKER_CONTAINER") == "true"
+
+
+def is_podman_environment():
+    """Check if running in Podman container"""
+    return os.path.exists("/run/.containerenv") or os.environ.get("CONTAINER") == "podman"
+
+
+def is_container_environment():
+    """Check if running in any container (Docker or Podman)"""
+    return is_docker_environment() or is_podman_environment()
 
 
 def apply_docker_config():
@@ -20,8 +30,22 @@ def apply_docker_config():
         os.environ.setdefault("ZAP_LOG_LEVEL", "INFO")
 
 
-# Apply Docker config when module is imported
+def apply_podman_config():
+    """Apply Podman-specific configuration"""
+    if is_podman_environment():
+        os.environ.setdefault("ZAP_BASE", "http://127.0.0.1:8080")
+        os.environ.setdefault("ZAP_AUTOSTART", "false")  # ZAP is started by entrypoint
+        os.environ.setdefault("ZAP_MCP_HOST", "0.0.0.0")  # Listen on all interfaces  # nosec B104
+        os.environ.setdefault("ZAP_SESSION_NAME", "zap_podman_session")
+        os.environ.setdefault("ZAP_SESSION_STRATEGY", "unique")
+        os.environ.setdefault("ZAP_STARTUP_TIMEOUT", "120")
+        os.environ.setdefault("ZAP_LONG_SCAN_TIMEOUT", "14400")
+        os.environ.setdefault("ZAP_LOG_LEVEL", "INFO")
+
+
+# Apply container config when module is imported
 apply_docker_config()
+apply_podman_config()
 
 # MCP Server Configuration
 MCP_HOST = os.environ.get("ZAP_MCP_HOST", "127.0.0.1")

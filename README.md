@@ -97,7 +97,12 @@ docker-compose ps  # or podman-compose ps
 - **[DOCKER.md](DOCKER.md)** - Complete Docker setup guide
 - **[PODMAN.md](PODMAN.md)** - Complete Podman setup guide
 
-**⚠️ CRITICAL:** When using containers, localhost applications must be accessed via `host.docker.internal` (Docker) or `host.containers.internal` (Podman) instead of `localhost`. This is the **only supported method** for localhost scanning.
+**✅ AUTOMATIC URL TRANSFORMATION:** The server automatically detects Docker/Podman environments and transforms `localhost`/`127.0.0.1` URLs to the appropriate host gateway:
+- **Docker**: `localhost:3000` → `host.docker.internal:3000`
+- **Podman**: `localhost:3000` → `host.containers.internal:3000`
+- **Local**: URLs remain unchanged
+
+This means you can use `localhost` URLs directly - they will be automatically transformed when running in containers!
 
 ## ⚙️ Configuration
 
