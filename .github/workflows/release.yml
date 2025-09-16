@@ -1,5 +1,10 @@
 name: Release
 
+# Add permissions for release creation
+permissions:
+  contents: write  # Required for creating releases and tags
+  packages: write  # Required for uploading release assets
+
 on:
   push:
     branches:
@@ -145,7 +150,21 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           fi
 
+      - name: Create and push tag
+        run: |
+          # Check if tag already exists
+          if git rev-parse "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.version.outputs.tag }} already exists"
+          else
+            echo "Creating and pushing tag ${{ steps.version.outputs.tag }}"
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git tag ${{ steps.version.outputs.tag }}
+            git push origin ${{ steps.version.outputs.tag }}
+          fi
+
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -156,13 +175,27 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: List built files
+        run: |
+          echo "Built files in dist/:"
+          ls -la ./dist/
+          
+          # Find the tar.gz file
+          TAR_FILE=$(find ./dist/ -name "*.tar.gz" | head -1)
+          if [ -z "$TAR_FILE" ]; then
+            echo "No tar.gz file found in dist/"
+            exit 1
+          fi
+          echo "Found tar.gz file: $TAR_FILE"
+          echo "TAR_FILE=$TAR_FILE" >> $GITHUB_ENV
+
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/
+          asset_path: ${{ env.TAR_FILE }}
           asset_name: zap-custom-mcp-${{ steps.version.outputs.version }}-dist.tar.gz
           asset_content_type: application/gzip
 
