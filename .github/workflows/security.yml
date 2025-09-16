@@ -12,6 +12,9 @@ jobs:
   security-scan:
     name: Security Analysis
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
     
     steps:
       - name: Checkout code
@@ -34,8 +37,8 @@ jobs:
 
       - name: Run Safety check for vulnerabilities
         run: |
-          safety check --json --output safety-report.json
-          safety check --output safety-report.txt
+          safety check --save-json safety-report.json
+          safety check --save-html safety-report.html
 
       - name: Run Semgrep SAST scan
         run: |
@@ -123,7 +126,7 @@ jobs:
       - name: Check for known vulnerabilities
         run: |
           pip install safety
-          safety check --json --output vulnerabilities.json
+          safety check --save-json vulnerabilities.json
 
       - name: Upload dependency reports
         uses: actions/upload-artifact@v4
@@ -153,7 +156,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
