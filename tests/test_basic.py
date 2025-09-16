@@ -29,7 +29,8 @@ def test_import_utils():
     try:
         import utils
 
-        assert hasattr(utils, "get_logger")
+        assert hasattr(utils, "canonical_base")
+        assert hasattr(utils, "RISK_LEVELS")
     except ImportError as e:
         pytest.fail(f"Failed to import utils: {e}")
 
@@ -39,7 +40,8 @@ def test_import_models():
     try:
         import models
 
-        assert hasattr(models, "ScanResult")
+        assert hasattr(models, "BaseScanArgs")
+        assert hasattr(models, "PassiveScanArgs")
     except ImportError as e:
         pytest.fail(f"Failed to import models: {e}")
 
