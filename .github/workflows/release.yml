@@ -79,7 +79,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/
-          asset_name: zap-mcp-server-${{ steps.get_version.version }}-dist.tar.gz
+          asset_name: zap-custom-mcp-${{ steps.get_version.version }}-dist.tar.gz
           asset_content_type: application/gzip
 
   docker-release:
@@ -104,7 +104,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: zap-mcp-server
+          images: zap-custom-mcp
           tags: |
             type=ref,event=tag
             type=raw,value=latest,enable={{is_default_branch}}

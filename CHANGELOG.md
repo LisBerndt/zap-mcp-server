@@ -86,13 +86,13 @@ This is the first public release of ZAP MCP Server, a powerful tool that bridges
 #### Getting Started
 1. Clone the repository
 2. Install dependencies: `pip install -r requirements.txt`
-3. Start the server: `python http_server.py`
+3. Start the server: `python -m zap_custom_mcp`
 4. Connect your MCP client to `http://localhost:8082/mcp`
 
 #### Docker Quick Start
 ```bash
-git clone https://github.com/YOUR_USERNAME/zap-mcp-server.git
-cd zap-mcp-server
+git clone https://github.com/YOUR_USERNAME/zap-custom-mcp.git
+cd zap-custom-mcp
 ./build.sh && ./start.sh
 ```
 
@@ -111,9 +111,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this 
 
 ## Support
 
-- 📖 [Documentation](https://github.com/YOUR_USERNAME/zap-mcp-server/wiki)
-- 🐛 [Issue Tracker](https://github.com/YOUR_USERNAME/zap-mcp-server/issues)
-- 💬 [Discussions](https://github.com/YOUR_USERNAME/zap-mcp-server/discussions)
+- 📖 [Documentation](https://github.com/YOUR_USERNAME/zap-custom-mcp/wiki)
+- 🐛 [Issue Tracker](https://github.com/YOUR_USERNAME/zap-custom-mcp/issues)
+- 💬 [Discussions](https://github.com/YOUR_USERNAME/zap-custom-mcp/discussions)
 
 ## License
 

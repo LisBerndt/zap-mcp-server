@@ -16,7 +16,7 @@ else
 fi
 
 # Build the container image
-$CONTAINER_RUNTIME build -t zap-mcp-server:latest .
+$CONTAINER_RUNTIME build -t zap-custom-mcp:latest .
 
 echo "Build completed successfully!"
 echo ""
@@ -24,10 +24,10 @@ echo "To run the container:"
 if [ "$CONTAINER_RUNTIME" = "podman" ]; then
     echo "  podman-compose up -d"
     echo "Or manually:"
-    echo "  podman run -p 8080:8080 -p 8082:8082 zap-mcp-server:latest"
+    echo "  podman run -p 8080:8080 -p 8082:8082 zap-custom-mcp:latest"
 else
     echo "  docker-compose up -d"
     echo "Or manually:"
-    echo "  docker run -p 8080:8080 -p 8082:8082 zap-mcp-server:latest"
+    echo "  docker run -p 8080:8080 -p 8082:8082 zap-custom-mcp:latest"
 fi
 

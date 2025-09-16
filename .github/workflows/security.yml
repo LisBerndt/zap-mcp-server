@@ -143,12 +143,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t zap-mcp-server:security-test .
+          docker build -t zap-custom-mcp:security-test .
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'zap-mcp-server:security-test'
+          image-ref: 'zap-custom-mcp:security-test'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
@@ -162,6 +162,6 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves
-          image: zap-mcp-server:security-test
+          image: zap-custom-mcp:security-test
           only-severities: critical,high,medium
           write-comment: true

@@ -1,7 +1,5 @@
 import asyncio
-import sys
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Any, Dict
 
 from fastapi import FastAPI, Request
@@ -9,18 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# Handle both module and direct execution
-try:
-    from .config import LONG_SCAN_TIMEOUT, MCP_HOST, MCP_PATH, MCP_PORT
-    from .logging_setup import setup_logger
-    from .server import call_tool, list_tools
-    from .zap_control import ensure_zap_running
-except ImportError:
-    # Fallback for direct execution
-    from config import LONG_SCAN_TIMEOUT, MCP_HOST, MCP_PATH, MCP_PORT
-    from logging_setup import setup_logger
-    from server import call_tool, list_tools
-    from zap_control import ensure_zap_running
+from .config import LONG_SCAN_TIMEOUT, MCP_HOST, MCP_PATH, MCP_PORT
+from .logging_setup import setup_logger
+from .server import call_tool, list_tools
+from .zap_control import ensure_zap_running
 
 LOG = setup_logger("zap_mcp.http_server")
 

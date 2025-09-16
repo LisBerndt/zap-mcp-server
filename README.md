@@ -50,8 +50,7 @@ This project uses a proper Python package structure (`zap_custom_mcp/`) which pr
 
 **Execution methods:**
 - `python -m zap_custom_mcp` (recommended)
-- `python -m zap_custom_mcp.http_server` (alternative)
-- `python zap_custom_mcp/http_server.py` (legacy, may have issues)
+- `python -m zap_custom_mcp.http_server` (alternative method)
 
 ### Option 1: Local Installation
 

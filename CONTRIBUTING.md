@@ -15,8 +15,8 @@ Thank you for your interest in contributing to the ZAP MCP Server! This document
 
 1. **Fork and clone the repository**
    ```bash
-   git clone https://github.com/LisBerndt/zap-mcp-server.git
-   cd zap-mcp-server
+   git clone https://github.com/LisBerndt/zap-custom-mcp.git
+   cd zap-custom-mcp
    ```
 
 2. **Install dependencies**
@@ -35,7 +35,7 @@ Thank you for your interest in contributing to the ZAP MCP Server! This document
 
 4. **Test your setup**
    ```bash
-   python http_server.py
+   python -m zap_custom_mcp
    ```
 
 ## 🛠️ Development Guidelines
@@ -106,7 +106,7 @@ Thank you for your interest in contributing to the ZAP MCP Server! This document
 ## 🏗️ Project Structure
 
 ```
-zap-mcp-server/
+zap-custom-mcp/
 ├── scans/           # Scan implementations
 ├── models.py        # Data models
 ├── utils.py         # Utility functions
@@ -126,7 +126,7 @@ zap-mcp-server/
 python server.py
 
 # Test HTTP server
-python http_server.py
+python -m zap_custom_mcp
 
 # Test Docker setup
 docker-compose up --build
@@ -191,8 +191,8 @@ docker-compose up --build
 ## 📞 Getting Help
 
 - 📖 Check the [Documentation](README.md)
-- 🐛 [Report Issues](https://github.com/LisBerndt/zap-mcp-server/issues)
-- 💬 [Join Discussions](https://github.com/LisBerndt/zap-mcp-server/discussions)
+- 🐛 [Report Issues](https://github.com/LisBerndt/zap-custom-mcp/issues)
+- 💬 [Join Discussions](https://github.com/LisBerndt/zap-custom-mcp/discussions)
 
 ## 🙏 Recognition
 

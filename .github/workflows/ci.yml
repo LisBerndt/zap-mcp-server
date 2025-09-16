@@ -95,11 +95,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t zap-mcp-server:test .
+          docker build -t zap-custom-mcp:test .
 
       - name: Test Docker image
         run: |
-          docker run --rm zap-mcp-server:test python -c "import sys; print('Python version:', sys.version)"
+          docker run --rm zap-custom-mcp:test python -c "import sys; print('Python version:', sys.version)"
 
   zap-integration:
     name: ZAP Integration Test
@@ -137,7 +137,7 @@ jobs:
 
       - name: Test MCP server startup
         run: |
-          timeout 120 python http_server.py &
+          timeout 120 python -m zap_custom_mcp &
           sleep 90
           curl -s http://localhost:8082/mcp | head -n 1
 
