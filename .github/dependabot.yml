@@ -6,13 +6,12 @@ updates:
   # Python dependencies
   - package-ecosystem: "pip"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "LisBerndt"
     assignees:
       - "LisBerndt"
     commit-message:
@@ -25,13 +24,12 @@ updates:
   # Docker dependencies
   - package-ecosystem: "docker"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "LisBerndt"
     assignees:
       - "LisBerndt"
     commit-message:
@@ -44,13 +42,12 @@ updates:
   # GitHub Actions dependencies
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "LisBerndt"
     assignees:
       - "LisBerndt"
     commit-message:
