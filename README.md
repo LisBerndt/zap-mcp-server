@@ -25,6 +25,7 @@ A powerful **Model Context Protocol (MCP) Server** that integrates **OWASP ZAP**
 - **📊 Rich Reporting**: Detailed vulnerability reports with risk scoring
 - **🔄 Session Management**: Flexible session handling strategies
 - **🛡️ Production Ready**: Robust error handling and logging
+- **🔄 Automatic URL Transformation**: Automatically maps `localhost` URLs to container host gateways
 
 ## 📋 Prerequisites
 
@@ -173,7 +174,7 @@ start.bat
 - **[DOCKER.md](DOCKER.md)** - Complete Docker guide
 - **[PODMAN.md](PODMAN.md)** - Complete Podman guide
 
-**⚠️ CRITICAL:** For localhost scanning, use `host.docker.internal` (Docker) or `host.containers.internal` (Podman) instead of `localhost`. This is the **only supported method**.
+**✅ AUTOMATIC URL TRANSFORMATION:** The server automatically detects Docker/Podman environments and transforms `localhost`/`127.0.0.1` URLs to the appropriate host gateway. You can use `localhost` URLs directly - no manual mapping needed!
 
 ### 💻 Local Installation
 
@@ -271,17 +272,38 @@ For other MCP clients, use the same URL endpoint.
 }
 ```
 
+### Localhost Scanning Examples
+
+**✅ AUTOMATIC URL TRANSFORMATION:** The server automatically detects Docker/Podman environments and transforms `localhost`/`127.0.0.1` URLs:
+
+```json
+{
+  "tool": "start_complete_scan",
+  "arguments": {
+    "url": "http://localhost:3000",
+    "include_findings": true
+  }
+}
+```
+
+**What happens automatically:**
+- **Docker**: `http://localhost:3000` → `http://host.docker.internal:3000`
+- **Podman**: `http://localhost:3000` → `http://host.containers.internal:3000`
+- **Local**: `http://localhost:3000` → `http://localhost:3000` (unchanged)
+
 **📖 For Docker/Podman localhost scanning examples, see:**
 - **[DOCKER.md](DOCKER.md)** - Docker localhost examples
 - **[PODMAN.md](PODMAN.md)** - Podman localhost examples
 
 ### Basic Security Scan
 
+**💡 Example Target:** [OWASP Juice Shop](https://juice-shop.herokuapp.com/#/) - A deliberately vulnerable web application designed for security testing and training.
+
 ```json
 {
   "tool": "start_complete_scan",
   "arguments": {
-    "url": "https://example.com",
+    "url": "https://juice-shop.herokuapp.com/#/",
     "include_findings": true,
     "include_evidence": false
   }
@@ -290,11 +312,13 @@ For other MCP clients, use the same URL endpoint.
 
 ### Quick Passive Scan
 
+**💡 Perfect for:** Quick security assessment without active testing.
+
 ```json
 {
   "tool": "start_passive_scan",
   "arguments": {
-    "url": "https://example.com",
+    "url": "https://juice-shop.herokuapp.com/#/",
     "timeout_seconds": 300
   }
 }
@@ -302,11 +326,13 @@ For other MCP clients, use the same URL endpoint.
 
 ### Custom Active Scan
 
+**💡 Advanced configuration:** Custom timeouts and scan policies for thorough testing.
+
 ```json
 {
   "tool": "start_active_scan",
   "arguments": {
-    "url": "https://example.com",
+    "url": "https://juice-shop.herokuapp.com/#/",
     "ascan_max_wait_seconds": 3600,
     "spider_max_wait_seconds": 900,
     "scanPolicyName": "Default Policy"
@@ -352,9 +378,11 @@ For other MCP clients, use the same URL endpoint.
 
 ## 🐳 Container Deployment
 
+**✅ AUTOMATIC URL TRANSFORMATION:** The server automatically detects Docker/Podman environments and transforms `localhost`/`127.0.0.1` URLs to the appropriate host gateway. You can use `localhost` URLs directly!
+
 **📖 For complete container setup and usage instructions, see:**
-- **[DOCKER.md](DOCKER.md)** - Complete Docker setup guide with localhost scanning
-- **[PODMAN.md](PODMAN.md)** - Complete Podman setup guide with localhost scanning
+- **[DOCKER.md](DOCKER.md)** - Complete Docker setup guide with automatic URL transformation
+- **[PODMAN.md](PODMAN.md)** - Complete Podman setup guide with automatic URL transformation
 
 **Quick container commands:**
 ```bash
@@ -381,7 +409,7 @@ Scans return structured results including:
 ```json
 {
   "scan_id": "abc12345",
-  "target": "https://example.com",
+  "target": "https://juice-shop.herokuapp.com/#/",
   "alerts": {
     "High": 2,
     "Medium": 5,

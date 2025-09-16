@@ -204,7 +204,7 @@ After startup, the following services are available:
 
 ## Example Scans
 
-### Host Gateway Version
+### Automatic URL Transformation
 ```bash
 # Test ZAP API directly
 curl http://localhost:8080/JSON/core/view/version/
@@ -212,9 +212,23 @@ curl http://localhost:8080/JSON/core/view/version/
 # Test MCP Server
 curl http://localhost:8082/mcp
 
-# ⚠️ CRITICAL: Scan localhost app (MUST use host.containers.internal)
-# ❌ WRONG: http://localhost:3000
-# ✅ CORRECT: http://host.containers.internal:3000
+# ✅ AUTOMATIC: Scan localhost app (URLs are automatically transformed)
+# ✅ CORRECT: http://localhost:3000 (automatically becomes http://host.containers.internal:3000)
+# ✅ CORRECT: http://127.0.0.1:8080 (automatically becomes http://host.containers.internal:8080)
+```
+
+### Example with OWASP Juice Shop
+```bash
+# Scan OWASP Juice Shop (publicly available test target)
+curl -X POST http://localhost:8082/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "start_complete_scan",
+    "arguments": {
+      "url": "https://juice-shop.herokuapp.com/#/",
+      "include_findings": true
+    }
+  }'
 ```
 
 ## Troubleshooting
@@ -244,20 +258,20 @@ curl http://localhost:8080/JSON/core/view/version/
 
 ### Localhost Access Doesn't Work
 
-**⚠️ MOST COMMON ISSUE: Using `localhost` instead of `host.containers.internal`**
+**✅ AUTOMATIC TRANSFORMATION:** The server automatically transforms `localhost` URLs to `host.containers.internal`. If you're still having issues:
 
 ```bash
 # ✅ CORRECT: Check if host.containers.internal is reachable
 podman-compose exec zap-mcp curl http://host.containers.internal:3000
 
-# ❌ WRONG: This will NOT work from inside the container
+# ✅ ALSO CORRECT: Use localhost (automatically transformed)
 podman-compose exec zap-mcp curl http://localhost:3000
 
 # If host.containers.internal doesn't work, try host IP address
 podman-compose exec zap-mcp curl http://172.17.0.1:3000
 ```
 
-**Remember: You MUST use `host.containers.internal`, never `localhost`!**
+**The server automatically handles URL transformation - you can use `localhost` URLs directly!**
 
 ### Podman-Specific Issues
 
@@ -363,7 +377,7 @@ podman-compose up -d
 
 | Solution | Advantages | Disadvantages | Recommendation |
 |----------|------------|---------------|----------------|
-| Host Gateway | Secure, isolated, flexible | URL transformation needed | ✅ **Recommended** |
+| Host Gateway | Secure, isolated, flexible | None (automatic URL transformation) | ✅ **Recommended** |
 
 ## Usage with MCP Clients
 
@@ -387,14 +401,14 @@ The Podman container provides the MCP server via HTTP at: `http://localhost:8082
 If you're migrating from Docker to Podman:
 
 1. **Install Podman Compose**: `pip install podman-compose`
-2. **Change host gateway**: `host.docker.internal` → `host.containers.internal`
-3. **Update commands**: `docker-compose` → `podman-compose`
-4. **Check permissions**: Ensure rootless Podman has necessary permissions
+2. **Update commands**: `docker-compose` → `podman-compose`
+3. **Check permissions**: Ensure rootless Podman has necessary permissions
+4. **URL transformation is automatic**: No manual changes needed for `localhost` URLs
 
 ## Best Practices
 
 1. **Use rootless Podman** for better security
-2. **Always use `host.containers.internal`** for localhost access
+2. **Use `localhost` URLs directly** - automatic transformation handles the rest
 3. **Monitor resource usage** with `podman stats`
 4. **Clean up regularly** with `podman system prune`
 5. **Use Podman Compose** for multi-container applications
