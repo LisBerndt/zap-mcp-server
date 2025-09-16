@@ -1,6 +1,6 @@
 {
   "errors": [],
-  "generated_at": "2025-09-16T14:21:10Z",
+  "generated_at": "2025-09-16T14:47:20Z",
   "metrics": {
     ".\\tests\\__init__.py": {
       "CONFIDENCE.HIGH": 0,
@@ -31,15 +31,15 @@
     ".\\zap_custom_mcp\\__init__.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
-      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
-      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
       "loc": 25,
       "nosec": 0,
-      "skipped_tests": 0
+      "skipped_tests": 1
     },
     ".\\zap_custom_mcp\\__main__.py": {
       "CONFIDENCE.HIGH": 0,
@@ -70,15 +70,15 @@
     ".\\zap_custom_mcp\\config.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
-      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
-      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
       "loc": 64,
       "nosec": 0,
-      "skipped_tests": 0
+      "skipped_tests": 1
     },
     ".\\zap_custom_mcp\\http_server.py": {
       "CONFIDENCE.HIGH": 0,
@@ -89,7 +89,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 370,
+      "loc": 362,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -303,12 +303,12 @@
     },
     ".\\zap_custom_mcp\\zap_control.py": {
       "CONFIDENCE.HIGH": 8,
-      "CONFIDENCE.LOW": 2,
+      "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 1,
-      "SEVERITY.LOW": 7,
-      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 8,
+      "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
       "loc": 159,
       "nosec": 0,
@@ -316,16 +316,16 @@
     },
     "_totals": {
       "CONFIDENCE.HIGH": 14,
-      "CONFIDENCE.LOW": 2,
-      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 1,
-      "SEVERITY.LOW": 13,
-      "SEVERITY.MEDIUM": 4,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 14,
+      "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 2806,
+      "loc": 2798,
       "nosec": 0,
-      "skipped_tests": 0
+      "skipped_tests": 2
     }
   },
   "results": [
@@ -348,26 +348,6 @@
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html",
       "test_id": "B101",
       "test_name": "assert_used"
-    },
-    {
-      "code": "4 APIKEY = os.environ.get(\"ZAP_APIKEY\", \"\").strip()\n5 MCP_HOST = os.environ.get(\"MCP_HOST\", \"0.0.0.0\")\n6 MCP_PORT = int(os.environ.get(\"MCP_PORT\", \"8082\"))\n",
-      "col_offset": 38,
-      "end_col_offset": 47,
-      "filename": ".\\zap_custom_mcp\\__init__.py",
-      "issue_confidence": "MEDIUM",
-      "issue_cwe": {
-        "id": 605,
-        "link": "https://cwe.mitre.org/data/definitions/605.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Possible binding to all interfaces.",
-      "line_number": 5,
-      "line_range": [
-        5
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b104_hardcoded_bind_all_interfaces.html",
-      "test_id": "B104",
-      "test_name": "hardcoded_bind_all_interfaces"
     },
     {
       "code": "44         return {\"counts\": counts, \"total\": sum(counts.values())}\n45     except Exception:\n46         pass\n47 \n",
@@ -410,26 +390,6 @@
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
       "test_id": "B110",
       "test_name": "try_except_pass"
-    },
-    {
-      "code": "14         os.environ.setdefault(\"ZAP_AUTOSTART\", \"false\")  # ZAP is started by entrypoint\n15         os.environ.setdefault(\"ZAP_MCP_HOST\", \"0.0.0.0\")  # Listen on all interfaces\n16         os.environ.setdefault(\"ZAP_SESSION_NAME\", \"zap_docker_session\")\n",
-      "col_offset": 46,
-      "end_col_offset": 55,
-      "filename": ".\\zap_custom_mcp\\config.py",
-      "issue_confidence": "MEDIUM",
-      "issue_cwe": {
-        "id": 605,
-        "link": "https://cwe.mitre.org/data/definitions/605.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Possible binding to all interfaces.",
-      "line_number": 15,
-      "line_range": [
-        15
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b104_hardcoded_bind_all_interfaces.html",
-      "test_id": "B104",
-      "test_name": "hardcoded_bind_all_interfaces"
     },
     {
       "code": "217                 raise\n218             sleep_s = min(6.0, BACKOFF * (2 ** (attempt - 1))) + random.uniform(0, 0.25)\n219             LOG.warning(\n",
@@ -600,46 +560,24 @@
       "test_name": "try_except_continue"
     },
     {
-      "code": "129     try:\n130         subprocess.Popen(cmd, shell=True)\n131     except Exception as e:\n",
+      "code": "129     try:\n130         subprocess.Popen(cmd, shell=False)\n131     except Exception as e:\n",
       "col_offset": 8,
-      "end_col_offset": 41,
+      "end_col_offset": 42,
       "filename": ".\\zap_custom_mcp\\zap_control.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 78,
         "link": "https://cwe.mitre.org/data/definitions/78.html"
       },
-      "issue_severity": "HIGH",
-      "issue_text": "subprocess call with shell=True identified, security issue.",
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
       "line_number": 130,
       "line_range": [
         130
       ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b602_subprocess_popen_with_shell_equals_true.html",
-      "test_id": "B602",
-      "test_name": "subprocess_popen_with_shell_equals_true"
-    },
-    {
-      "code": "163         if SESSION_STRATEGY in (\"reuse\", \"unique\"):\n164             r = requests.get(\n165                 f\"{ZAP_BASE}/JSON/core/action/loadSession/\", params=_params()\n166             )\n167             if r.status_code == 200:\n",
-      "col_offset": 16,
-      "end_col_offset": 13,
-      "filename": ".\\zap_custom_mcp\\zap_control.py",
-      "issue_confidence": "LOW",
-      "issue_cwe": {
-        "id": 400,
-        "link": "https://cwe.mitre.org/data/definitions/400.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Call to requests without timeout",
-      "line_number": 164,
-      "line_range": [
-        164,
-        165,
-        166
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html",
-      "test_id": "B113",
-      "test_name": "request_without_timeout"
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
     },
     {
       "code": "169                 return ZAP_SESSION_ID\n170     except Exception:\n171         pass\n172 \n",
@@ -661,26 +599,6 @@
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
       "test_id": "B110",
       "test_name": "try_except_pass"
-    },
-    {
-      "code": "174         try:\n175             r = requests.get(f\"{ZAP_BASE}/JSON/core/action/newSession/\", params=params)\n176             if r.status_code == 200:\n",
-      "col_offset": 16,
-      "end_col_offset": 87,
-      "filename": ".\\zap_custom_mcp\\zap_control.py",
-      "issue_confidence": "LOW",
-      "issue_cwe": {
-        "id": 400,
-        "link": "https://cwe.mitre.org/data/definitions/400.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Call to requests without timeout",
-      "line_number": 175,
-      "line_range": [
-        175
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html",
-      "test_id": "B113",
-      "test_name": "request_without_timeout"
     },
     {
       "code": "178                 return ZAP_SESSION_ID\n179         except Exception:\n180             continue\n181 \n",

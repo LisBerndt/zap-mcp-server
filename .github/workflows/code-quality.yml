@@ -53,7 +53,7 @@ jobs:
 
       - name: Run Bandit security linter
         run: |
-          bandit -r . -f json -o bandit-report.json || true
+          bandit -r . -f json -o bandit-report.json --exit-zero
 
       - name: Check for TODO/FIXME comments
         run: |

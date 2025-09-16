@@ -69,7 +69,7 @@ jobs:
 
       - name: Run Bandit security scan
         run: |
-          bandit -r . -f json -o bandit-report.json || true
+          bandit -r . -f json -o bandit-report.json --exit-zero
 
       - name: Run Safety check
         run: |

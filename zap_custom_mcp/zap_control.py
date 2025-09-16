@@ -78,12 +78,12 @@ def _check_zap_ports() -> list:
     return running_ports
 
 
-def _build_zap_cmd(zap_dir: str) -> str:
+def _build_zap_cmd(zap_dir: str) -> list[str]:
     p = urlparse(ZAP_BASE)
     host = p.hostname or "127.0.0.1"
     port = p.port or (443 if p.scheme == "https" else 8080)
-    # Use cmd /c with proper working directory
-    return f'cmd /c "cd /d "{zap_dir}" && zap.bat -daemon -port {port} -host {host} -config api.disablekey=true"'
+    # Return command as list for subprocess.Popen with shell=False
+    return ["cmd", "/c", f"cd /d \"{zap_dir}\" && zap.bat -daemon -port {port} -host {host} -config api.disablekey=true"]
 
 
 def ensure_zap_running() -> None:
@@ -127,7 +127,7 @@ def ensure_zap_running() -> None:
 
     LOG.info("zap.autostart.exec", extra={"extra": {"cmd": cmd}})
     try:
-        subprocess.Popen(cmd, shell=True)
+        subprocess.Popen(cmd, shell=False)
     except Exception as e:
         LOG.error("zap.autostart.spawn_failed", extra={"extra": {"err": repr(e)}})
         return
@@ -162,7 +162,7 @@ def ensure_session() -> Optional[str]:
     try:
         if SESSION_STRATEGY in ("reuse", "unique"):
             r = requests.get(
-                f"{ZAP_BASE}/JSON/core/action/loadSession/", params=_params()
+                f"{ZAP_BASE}/JSON/core/action/loadSession/", params=_params(), timeout=30
             )
             if r.status_code == 200:
                 ZAP_SESSION_ID = name
@@ -172,7 +172,7 @@ def ensure_session() -> Optional[str]:
 
     for params in (_params(), _params({"overwrite": "true"})):
         try:
-            r = requests.get(f"{ZAP_BASE}/JSON/core/action/newSession/", params=params)
+            r = requests.get(f"{ZAP_BASE}/JSON/core/action/newSession/", params=params, timeout=30)
             if r.status_code == 200:
                 ZAP_SESSION_ID = name
                 return ZAP_SESSION_ID

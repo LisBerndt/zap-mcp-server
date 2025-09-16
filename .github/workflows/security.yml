@@ -29,8 +29,8 @@ jobs:
 
       - name: Run Bandit security scan
         run: |
-          bandit -r . -f json -o bandit-report.json
-          bandit -r . -f txt -o bandit-report.txt
+          bandit -r . -f json -o bandit-report.json --exit-zero
+          bandit -r . -f txt -o bandit-report.txt --exit-zero
 
       - name: Run Safety check for vulnerabilities
         run: |

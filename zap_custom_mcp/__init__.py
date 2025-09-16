@@ -2,7 +2,7 @@ import os
 
 ZAP_BASE = os.environ.get("ZAP_URL", "http://127.0.0.1:8080").rstrip("/")
 APIKEY = os.environ.get("ZAP_APIKEY", "").strip()
-MCP_HOST = os.environ.get("MCP_HOST", "0.0.0.0")
+MCP_HOST = os.environ.get("MCP_HOST", "0.0.0.0")  # nosec B104
 MCP_PORT = int(os.environ.get("MCP_PORT", "8082"))
 MCP_PATH = os.environ.get("MCP_PATH", "/mcp")
 

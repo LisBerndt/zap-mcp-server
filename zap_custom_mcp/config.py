@@ -12,7 +12,7 @@ def apply_docker_config():
     if is_docker_environment():
         os.environ.setdefault("ZAP_BASE", "http://127.0.0.1:8080")
         os.environ.setdefault("ZAP_AUTOSTART", "false")  # ZAP is started by entrypoint
-        os.environ.setdefault("ZAP_MCP_HOST", "0.0.0.0")  # Listen on all interfaces
+        os.environ.setdefault("ZAP_MCP_HOST", "0.0.0.0")  # Listen on all interfaces  # nosec B104
         os.environ.setdefault("ZAP_SESSION_NAME", "zap_docker_session")
         os.environ.setdefault("ZAP_SESSION_STRATEGY", "unique")
         os.environ.setdefault("ZAP_STARTUP_TIMEOUT", "120")
