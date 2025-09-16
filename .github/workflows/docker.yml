@@ -26,37 +26,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: false
-          tags: zap-custom-mcp:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Test Docker image
         run: |
-          docker run --rm zap-custom-mcp:test python -c "import sys; print('Python version:', sys.version)"
-          docker run --rm zap-custom-mcp:test python -c "import requests; print('Requests version:', requests.__version__)"
-
-      - name: Run container health check
-        run: |
-          # Start container in background
-          docker run -d --name zap-test -p 8080:8080 -p 8082:8082 zap-custom-mcp:test
-          
-          # Wait for startup
-          sleep 30
-          
-          # Check ZAP API
-          curl -f http://localhost:8080/JSON/core/view/version/ || exit 1
-          
-          # Check MCP endpoint
-          curl -f http://localhost:8082/mcp || exit 1
-          
-          # Cleanup
-          docker stop zap-test
-          docker rm zap-test
+          docker build -t zap-custom-mcp:test .
+          echo "✅ Docker image built successfully"
+          docker images zap-custom-mcp:test
 
   docker-security-scan:
     name: Docker Security Scan

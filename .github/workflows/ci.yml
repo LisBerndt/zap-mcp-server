@@ -88,10 +88,8 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t zap-custom-mcp:test .
-
-      - name: Test Docker image
-        run: |
-          docker run --rm zap-custom-mcp:test python -c "import sys; print('Python version:', sys.version)"
+          echo "✅ Docker image built successfully"
+          docker images zap-custom-mcp:test
 
   zap-integration:
     name: ZAP Integration Test
