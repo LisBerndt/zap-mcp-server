@@ -4,18 +4,17 @@ This document describes how to run the ZAP MCP Server in a Docker container and 
 
 ## ⚠️ IMPORTANT: Automatic Localhost URL Transformation
 
-**✅ AUTOMATIC TRANSFORMATION:** The server now automatically detects Docker environments and transforms `localhost`/`127.0.0.1` URLs to `host.docker.internal`:
+The server detects Docker environments and transparently maps `localhost`/`127.0.0.1` URLs to `host.docker.internal`.
+
+Examples:
 
 ```bash
-# ✅ These URLs are automatically transformed in Docker:
-URL: http://localhost:3000     → http://host.docker.internal:3000
-URL: http://127.0.0.1:8080    → http://host.docker.internal:8080
-URL: https://localhost:8443    → https://host.docker.internal:8443
+URL: http://localhost:3000   → http://host.docker.internal:3000
+URL: http://127.0.0.1:8080  → http://host.docker.internal:8080
+URL: https://localhost:8443 → https://host.docker.internal:8443
 
-# ✅ You can now use localhost URLs directly!
+# Localhost URLs can be used directly ✅
 ```
-
-**This means you no longer need to manually replace `localhost` with `host.docker.internal` - it happens automatically!**
 
 ## Prerequisites
 
@@ -39,37 +38,15 @@ URL: https://localhost:8443    → https://host.docker.internal:8443
 docker-compose ps
 ```
 
-**⚠️ CRITICAL: For localhost scans, you can now use:**
-- `http://localhost:3000` (automatically transformed to `http://host.docker.internal:3000`)
-- `http://127.0.0.1:8080` (automatically transformed to `http://host.docker.internal:8080`)
-- **No manual URL replacement needed!**
+**⚠️ CRITICAL: For localhost scans, you can use:**
+- `http://localhost:3000` (automatically mapped to `http://host.docker.internal:3000`)
+- `http://127.0.0.1:8080` (automatically mapped to `http://host.docker.internal:8080`)
+- No manual URL replacement needed
 
 ## Localhost Scanning
 
-### ⚠️ CRITICAL PROBLEM
-Docker containers are isolated by default. **`localhost` in the container points to the container itself, not the host!**
-
-**This means:**
-- ❌ `http://localhost:3000` will NOT reach your local development server
-- ❌ `http://localhost:8080` will NOT reach your local API
-- ❌ Any `localhost` URL will fail when scanning from Docker containers
-
-**You MUST use `host.docker.internal` instead of `localhost` for all localhost applications!**
-
-### ✅ AUTOMATIC SOLUTION
-
-**The server automatically handles localhost URL transformation:**
-
-```bash
-# ✅ These work automatically in Docker:
-http://localhost:3000     → http://host.docker.internal:3000
-http://127.0.0.1:8080    → http://host.docker.internal:8080
-https://localhost:8443    → https://host.docker.internal:8443
-
-# ✅ You can use localhost URLs directly!
-```
-
-**No manual URL replacement needed - the server detects Docker and transforms URLs automatically!**
+### ⚠️ CRITICAL NOTE
+Inside Docker, `localhost` normally refers to the container. This project detects Docker and automatically remaps `localhost`/`127.0.0.1` to `host.docker.internal` for scan targets, so you can pass `localhost` URLs directly.
 
 ## Configuration
 
@@ -116,9 +93,8 @@ curl http://localhost:8080/JSON/core/view/version/
 # Test MCP Server
 curl http://localhost:8082/mcp
 
-# ✅ AUTOMATIC: Scan localhost app (URLs are automatically transformed)
-# ✅ CORRECT: http://localhost:3000 (automatically becomes http://host.docker.internal:3000)
-# ✅ CORRECT: http://127.0.0.1:8080 (automatically becomes http://host.docker.internal:8080)
+# Scan a service running on your host (localhost auto-mapped)
+curl http://localhost:3000
 ```
 
 ### Example with OWASP Juice Shop
@@ -159,20 +135,16 @@ curl http://localhost:8080/JSON/core/view/version/
 
 ### Localhost Access Doesn't Work
 
-**✅ AUTOMATIC TRANSFORMATION:** The server automatically transforms `localhost` URLs to `host.docker.internal`. If you're still having issues:
-
 ```bash
-# ✅ CORRECT: Check if host.docker.internal is reachable
+# Check if host.docker.internal is reachable from container
 docker-compose exec zap-mcp curl http://host.docker.internal:3000
 
-# ✅ ALSO CORRECT: Use localhost (automatically transformed)
+# You can also use localhost (auto-mapped)
 docker-compose exec zap-mcp curl http://localhost:3000
 
 # If host.docker.internal doesn't work, try host IP address
 docker-compose exec zap-mcp curl http://172.17.0.1:3000
 ```
-
-**The server automatically handles URL transformation - you can use `localhost` URLs directly!**
 
 ### Port Conflicts
 

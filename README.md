@@ -73,6 +73,31 @@ This project uses a proper Python package structure (`zap_custom_mcp/`) which pr
    pip install -r requirements.txt
    ```
 
+4. **Linux-specific notes**
+
+   - Install Java (OpenJDK 11+ recommended):
+     ```bash
+     # Debian/Ubuntu
+     sudo apt-get update && sudo apt-get install -y default-jre
+
+     # Fedora
+     sudo dnf install -y java-11-openjdk
+     ```
+
+   - Install OWASP ZAP:
+     ```bash
+     # Debian/Ubuntu (from official repos)
+     sudo apt-get update && sudo apt-get install -y zaproxy
+
+     # If not available in your distro repos, download from ZAP website:
+     # https://www.zaproxy.org/download/
+     ```
+
+   - Verify ZAP is on PATH (Linux/Mac):
+     ```bash
+     which zap.sh || echo "zap.sh not found in PATH"
+     ```
+
 ### Option 2: Docker/Podman Deployment (Recommended)
 
 **🐳 Docker/Podman is the easiest and most reliable method!**
