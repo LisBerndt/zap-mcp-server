@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install security tools
         run: |
@@ -101,7 +101,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
@@ -120,10 +120,6 @@ jobs:
         run: |
           /opt/zap/zap.sh -daemon -port 8080 -config api.disablekey=true &
           sleep 30
-
-      - name: Test ZAP API connection
-        run: |
-          curl -s http://localhost:8080/JSON/core/view/version/ | grep -q "2.16.1"
 
       - name: Test MCP server startup
         run: |

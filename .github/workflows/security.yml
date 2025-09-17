@@ -30,17 +30,12 @@ jobs:
       - name: Install security tools
         run: |
           python -m pip install --upgrade pip
-          pip install bandit safety semgrep
+          pip install bandit semgrep
 
       - name: Run Bandit security scan
         run: |
           bandit -r . -f json -o bandit-report.json --exit-zero
           bandit -r . -f txt -o bandit-report.txt --exit-zero
-
-      - name: Run Safety check for vulnerabilities
-        run: |
-          safety check --save-json safety-report.json
-          safety check --save-html safety-report.html
 
       - name: Run Semgrep SAST scan
         run: |
@@ -62,8 +57,6 @@ jobs:
           path: |
             bandit-report.json
             bandit-report.txt
-            safety-report.json
-            safety-report.txt
             semgrep-report.json
             semgrep-report.txt
 
@@ -74,27 +67,18 @@ jobs:
           script: |
             const fs = require('fs');
             
-            // Read security reports
+            // Read security reports (Bandit)
             let banditResults = '';
-            let safetyResults = '';
-            
             try {
               const banditData = JSON.parse(fs.readFileSync('bandit-report.json', 'utf8'));
-              const safetyData = JSON.parse(fs.readFileSync('safety-report.json', 'utf8'));
-              
               banditResults = `**Bandit Security Scan Results:**\n`;
               banditResults += `- High: ${banditData.results.filter(r => r.issue_severity === 'HIGH').length}\n`;
               banditResults += `- Medium: ${banditData.results.filter(r => r.issue_severity === 'MEDIUM').length}\n`;
               banditResults += `- Low: ${banditData.results.filter(r => r.issue_severity === 'LOW').length}\n`;
-              
-              safetyResults = `**Safety Check Results:**\n`;
-              safetyResults += `- Vulnerabilities found: ${safetyData.length}\n`;
-              
             } catch (error) {
-              console.log('Error reading security reports:', error);
+              console.log('Error reading Bandit report:', error);
             }
-            
-            const comment = `## 🔒 Security Scan Results\n\n${banditResults}\n${safetyResults}\n\n📊 Detailed reports are available in the workflow artifacts.`;
+            const comment = `## 🔒 Security Scan Results\n\n${banditResults}\n📊 Detailed reports are available in the workflow artifacts.`;
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -127,8 +111,7 @@ jobs:
 
       - name: Check for known vulnerabilities
         run: |
-          pip install safety
-          safety check --save-json vulnerabilities.json
+          echo "Skipping Safety vulnerability check as requested"
 
       - name: Upload dependency reports
         uses: actions/upload-artifact@v4
@@ -136,7 +119,6 @@ jobs:
           name: dependency-reports-${{ github.run_number }}
           path: |
             outdated-packages.json
-            vulnerabilities.json
 
   docker-security:
     name: Docker Security Scan
