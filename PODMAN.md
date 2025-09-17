@@ -4,18 +4,17 @@ This document describes how to run the ZAP MCP Server using Podman and Podman Co
 
 ## ⚠️ IMPORTANT: Automatic Localhost URL Transformation
 
-**✅ AUTOMATIC TRANSFORMATION:** The server now automatically detects Podman environments and transforms `localhost`/`127.0.0.1` URLs to `host.containers.internal`:
+The server detects Podman environments and transparently maps `localhost`/`127.0.0.1` URLs to `host.containers.internal`.
+
+Examples:
 
 ```bash
-# ✅ These URLs are automatically transformed in Podman:
-URL: http://localhost:3000     → http://host.containers.internal:3000
-URL: http://127.0.0.1:8080    → http://host.containers.internal:8080
-URL: https://localhost:8443    → https://host.containers.internal:8443
+URL: http://localhost:3000   → http://host.containers.internal:3000
+URL: http://127.0.0.1:8080  → http://host.containers.internal:8080
+URL: https://localhost:8443 → https://host.containers.internal:8443
 
-# ✅ You can now use localhost URLs directly!
+# Localhost URLs can be used directly ✅
 ```
-
-**This means you no longer need to manually replace `localhost` with `host.containers.internal` - it happens automatically!**
 
 ## Prerequisites
 
@@ -53,10 +52,10 @@ sudo dnf install podman-compose
 podman-compose ps
 ```
 
-**⚠️ CRITICAL: For localhost scans, you can now use:**
-- `http://localhost:3000` (automatically transformed to `http://host.containers.internal:3000`)
-- `http://127.0.0.1:8080` (automatically transformed to `http://host.containers.internal:8080`)
-- **No manual URL replacement needed!**
+**⚠️ CRITICAL: For localhost scans, you can use:**
+- `http://localhost:3000` (automatically mapped to `http://host.containers.internal:3000`)
+- `http://127.0.0.1:8080` (automatically mapped to `http://host.containers.internal:8080`)
+- No manual URL replacement needed
 
 ## Podman-Specific Configuration
 
@@ -112,30 +111,8 @@ services:
 
 ## Localhost Scanning with Podman
 
-### ⚠️ CRITICAL PROBLEM
-Podman containers are isolated by default. **`localhost` in the container points to the container itself, not the host!**
-
-**This means:**
-- ❌ `http://localhost:3000` will NOT reach your local development server
-- ❌ `http://localhost:8080` will NOT reach your local API
-- ❌ Any `localhost` URL will fail when scanning from Podman containers
-
-**You MUST use `host.containers.internal` instead of `localhost` for all localhost applications!**
-
-### ✅ AUTOMATIC SOLUTION
-
-**The server automatically handles localhost URL transformation:**
-
-```bash
-# ✅ These work automatically in Podman:
-http://localhost:3000     → http://host.containers.internal:3000
-http://127.0.0.1:8080    → http://host.containers.internal:8080
-https://localhost:8443    → https://host.containers.internal:8443
-
-# ✅ You can use localhost URLs directly!
-```
-
-**No manual URL replacement needed - the server detects Podman and transforms URLs automatically!**
+### ⚠️ CRITICAL NOTE
+Inside Podman, `localhost` normally refers to the container. This project detects Podman and automatically remaps `localhost`/`127.0.0.1` to `host.containers.internal` for scan targets, so you can pass `localhost` URLs directly.
 
 ## Podman-Specific Commands
 
@@ -225,9 +202,8 @@ curl http://localhost:8080/JSON/core/view/version/
 # Test MCP Server
 curl http://localhost:8082/mcp
 
-# ✅ AUTOMATIC: Scan localhost app (URLs are automatically transformed)
-# ✅ CORRECT: http://localhost:3000 (automatically becomes http://host.containers.internal:3000)
-# ✅ CORRECT: http://127.0.0.1:8080 (automatically becomes http://host.containers.internal:8080)
+# Scan a service running on your host (localhost auto-mapped)
+curl http://localhost:3000
 ```
 
 ### Example with OWASP Juice Shop
@@ -271,13 +247,11 @@ curl http://localhost:8080/JSON/core/view/version/
 
 ### Localhost Access Doesn't Work
 
-**✅ AUTOMATIC TRANSFORMATION:** The server automatically transforms `localhost` URLs to `host.containers.internal`. If you're still having issues:
-
 ```bash
-# ✅ CORRECT: Check if host.containers.internal is reachable
+# Check if host.containers.internal is reachable
 podman-compose exec zap-mcp curl http://host.containers.internal:3000
 
-# ✅ ALSO CORRECT: Use localhost (automatically transformed)
+# You can also use localhost (auto-mapped)
 podman-compose exec zap-mcp curl http://localhost:3000
 
 # If host.containers.internal doesn't work, try host IP address
@@ -416,12 +390,12 @@ If you're migrating from Docker to Podman:
 1. **Install Podman Compose**: `pip install podman-compose`
 2. **Update commands**: `docker-compose` → `podman-compose`
 3. **Check permissions**: Ensure rootless Podman has necessary permissions
-4. **URL transformation is automatic**: No manual changes needed for `localhost` URLs
+4. **Automatic localhost mapping**: Just use `localhost` URLs inside scans
 
 ## Best Practices
 
 1. **Use rootless Podman** for better security
-2. **Use `localhost` URLs directly** - automatic transformation handles the rest
+2. **Use `localhost` URLs directly** - automatic mapping handles the rest
 3. **Monitor resource usage** with `podman stats`
 4. **Clean up regularly** with `podman system prune`
 5. **Use Podman Compose** for multi-container applications
