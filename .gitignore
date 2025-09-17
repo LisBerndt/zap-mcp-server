@@ -1,3 +1,10 @@
+semgrep-report.json
+semgrep-report.txt
+bandit-report.json
+bandit-report.txt
+safety-report.txt
+vulnerabilities.json
+safety-report.json
 
 # Python
 __pycache__/
