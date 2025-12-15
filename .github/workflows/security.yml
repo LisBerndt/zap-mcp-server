@@ -51,7 +51,7 @@ jobs:
           extra_args: --debug --only-verified
 
       - name: Upload security reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: security-reports-${{ github.run_number }}
           path: |
@@ -114,7 +114,7 @@ jobs:
           echo "Skipping Safety vulnerability check as requested"
 
       - name: Upload dependency reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: dependency-reports-${{ github.run_number }}
           path: |
@@ -140,7 +140,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload SARIF results as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: trivy-sarif-results
