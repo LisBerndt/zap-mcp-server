@@ -1,5 +1,5 @@
 # ZAP stable and versioned
-FROM zaproxy/zap-stable:2.16.1
+FROM zaproxy/zap-stable:2.17.0
 
 USER root
 ENV DEBIAN_FRONTEND=noninteractive \
